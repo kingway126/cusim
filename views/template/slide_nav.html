@@ -1,0 +1,42 @@
+{{define  "slide_nav"}}
+<div class="tpl-left-nav tpl-left-nav-hover">
+    <div class="tpl-left-nav-title">
+        Custom IM
+    </div>
+    <div class="tpl-left-nav-list">
+        <ul class="tpl-left-nav-menu">
+            <li class="tpl-left-nav-item">
+                <a id="path1" href="/index" class="nav-link">
+                    <i class="am-icon-home"></i>
+                    <span>首页</span>
+                </a>
+            </li>
+
+            <li class="tpl-left-nav-item">
+                <a id="path2" href="/sitemap" class="nav-link">
+                    <i class="am-icon-sitemap"></i>
+                    <span>站点清单</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+<script>
+
+    function SetActiveMune() {
+        var url = window.location.href
+
+        var menu = document.getElementsByClassName("nav-link")
+
+        for (var i = 0; i < menu.length; i++) {
+            console.log(menu[i].href)
+            if (menu[i].href == url) {
+                menu[i].classList.add("active")
+            }
+        }
+    }
+
+    SetActiveMune()
+
+</script>
+{{end}}
