@@ -4,7 +4,6 @@ var index = new Vue({
         uuid: ""
     },
     methods: {
-
         checkToken: function() {
             var id = window.localStorage.getItem("id")
             var token = window.localStorage.getItem("token")

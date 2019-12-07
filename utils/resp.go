@@ -11,7 +11,7 @@ type RespData struct {
 	Msg   string      `json:"msg, omitempty"`
 	Data  interface{} `json:"data, omitempty"`
 	Rows  interface{} `json:"rows, omitempty"`
-	Url   string      `json："url, omitempty"`
+	Path   string      `json:"path, omitempty"`
 	Total int         `json:"total, omitempty"`
 }
 
@@ -25,6 +25,12 @@ func RespOk(w http.ResponseWriter, data interface{}, msg string, url string) {
 	Resp(w, 0, msg, data, nil, 0, url)
 }
 
+//todo 响应数据列表函数
+func RespOkList(w http.ResponseWriter, rows interface{}, total int) {
+	Resp(w, 0, "", nil, rows, total, "")
+}
+
+
 func Resp(w http.ResponseWriter, code int, msg string, data interface{}, rows interface{}, total int, url string) {
 	//设置header为Json
 	w.Header().Set("Content-Type", "application/json")
@@ -36,7 +42,7 @@ func Resp(w http.ResponseWriter, code int, msg string, data interface{}, rows in
 		Msg:   msg,
 		Data:  data,
 		Rows:  rows,
-		Url:   url,
+		Path:   url,
 		Total: total,
 	}
 	//将结构体转为json

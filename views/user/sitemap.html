@@ -32,15 +32,15 @@
                     <div class="am-u-sm-12 am-u-md-6">
                         <div class="am-btn-toolbar">
                             <div class="am-btn-group am-btn-group-xs">
-                                <button type="button" class="am-btn am-btn-default am-btn-success"><span class="am-icon-plus"></span> 新增</button>
+                                <button @click="window.location.href = '/sitemap/edit'" type="button" class="am-btn am-btn-default am-btn-success"><span class="am-icon-plus"></span> 新增</button>
                             </div>
                         </div>
                     </div>
                     <div class="am-u-sm-12 am-u-md-3">
                         <div class="am-input-group am-input-group-sm">
-                            <input type="text" class="am-form-field">
+                            <input type="text" class="am-form-field" v-model="search" placeholder="名称或者网址">
                             <span class="am-input-group-btn">
-            <button class="am-btn  am-btn-default am-btn-success tpl-am-btn-success am-icon-search" type="button"></button>
+            <button @click="searchSite()" class="am-btn  am-btn-default am-btn-success tpl-am-btn-success am-icon-search" type="button"></button>
           </span>
                         </div>
                     </div>
@@ -52,26 +52,27 @@
                                 <thead>
                                 <tr>
                                     <th class="table-id">ID</th>
-                                    <th class="table-title">标题</th>
-                                    <th class="table-type">类别</th>
-                                    <th class="table-author am-hide-sm-only">作者</th>
-                                    <th class="table-date am-hide-sm-only">修改日期</th>
+                                    <th class="table-title">名称</th>
+                                    <th class="table-type">网址</th>
+                                    <th class="table-date">UUID</th>
+                                    <th class="table-date">创建时间</th>
                                     <th class="table-set">操作</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td><a href="#">Business management</a></td>
-                                    <td>default</td>
-                                    <td class="am-hide-sm-only">测试1号</td>
-                                    <td class="am-hide-sm-only">2014年9月4日 7:28:47</td>
+                                <tr v-for="app in appList">
+                                    <td>${app.id}</td>
+                                    <td>${app.name}</td>
+                                    <td><a href="${app.url}">${app.url}</a></td>
+                                    <td>${app.uuid}</td>
+                                    <td>${timestampToTime(app.create_at)}</td>
                                     <td>
                                         <div class="am-btn-toolbar">
                                             <div class="am-btn-group am-btn-group-xs">
-                                                <button class="am-btn am-btn-default am-btn-xs am-text-secondary"><span class="am-icon-pencil-square-o"></span> 编辑</button>
-                                                <button class="am-btn am-btn-default am-btn-xs am-hide-sm-only"><span class="am-icon-copy"></span> 复制链接</button>
-                                                <button class="am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only"><span class="am-icon-trash-o"></span> 删除</button>
+                                                <button type="button" @click="window.location.href = '/sitemap/edit?aid=' + app.id" class="am-btn am-btn-default am-btn-xs am-text-secondary"><span class="am-icon-pencil-square-o"></span> 编辑</button>
+                                                <button type="button" @click="ResetUUID(app.id)" class="am-btn am-btn-default am-btn-xs am-text-success am-text-secondary"><span class="am-icon-refresh"></span> 重置UUID</button>
+                                                <button type="button" class="am-btn am-btn-default am-btn-xs am-hide-sm-only"><span class="am-icon-copy"></span> 复制JS链接</button>
+                                                <button type="button" @click="DeleteSite(app.id)" class="am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only"><span class="am-icon-trash-o"></span> 删除</button>
                                             </div>
                                         </div>
                                     </td>
@@ -82,13 +83,11 @@
 
                                 <div class="am-fr">
                                     <ul class="am-pagination tpl-pagination">
-                                        <li class="am-disabled"><a href="#">«</a></li>
-                                        <li class="am-active"><a href="#">1</a></li>
-                                        <li><a href="#">2</a></li>
-                                        <li><a href="#">3</a></li>
-                                        <li><a href="#">4</a></li>
-                                        <li><a href="#">5</a></li>
-                                        <li><a href="#">»</a></li>
+                                        <li id="uPage" @click="upPage()"><a href="javascript:;">«</a></li>
+                                        <template v-for="page in pagelist">
+                                            <li @click="jumPage(page.num)" :class="page.class"><a href="javascript:;">${page.num}</a></li>
+                                        </template>
+                                        <li id="downPage" @click="downPage()"><a href="javascript:;">»</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -109,6 +108,7 @@
 
 
 {{template "js"}}
+<script src="/assets/js/sitemap.js"></script>
 </body>
 </html>
 {{end}}

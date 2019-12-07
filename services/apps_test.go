@@ -19,6 +19,8 @@ func TestAppsWorkFlow(t *testing.T) {
 	t.Run("GetApp", testGetApp)
 	t.Run("ReSetUuid", testResetUuid)
 	t.Run("ReGetApp", testReGetApp)
+	t.Run("ChangeApp", testChangeApp)
+	t.Run("ComfireApp", testCheckApp)
 	t.Run("DeleteApp", testDeleteApp)
 	t.Run("ReGetDeleteApp", testReGetDeleteApp)
 	t.Run("ListApp", testListApp)
@@ -62,6 +64,22 @@ func testReGetApp(t *testing.T) {
 		t.Errorf("Error of ReGetApp: 重置uuid失败")
 	}
 
+}
+//修改App记录
+func testChangeApp(t *testing.T) {
+	err := ChangeApp(1, "阿里云", "www.baidu.com", "")
+	if err != nil {
+		t.Errorf("Error of ChangeApp: %s", err.Error())
+	}
+}
+//检测app记录是否修改成功
+func testCheckApp(t *testing.T) {
+	app, err := GetAppInfo(1)
+	if err != nil {
+		t.Errorf("Error of CheckApp: %s", err.Error())
+	} else if app.Name != "阿里云" || app.Url != "www.baidu.com" {
+		t.Errorf("Error of CheckApp: %s", "修改App信息失败")
+	}
 }
 //删除app记录
 func testDeleteApp(t *testing.T) {

@@ -1,10 +1,10 @@
 package utils
-
+//登陆请求参数
 type LoginArgs struct {
 	User string `json:"user" form:"user"`
 	Pass string `json:"pass" form:"pass"`
 }
-
+//
 type TokenArgs struct {
 	Id    int    `json:"id"`
 	Token string `json:"token"`
@@ -16,4 +16,16 @@ type AppArgs struct {
 	PageSize  int    `json:"page_size"`
 	PageIndex int    `json:"page_index"`
 	Search    string `json:"search, omitempty"`
+}
+//删除站点
+type DeleteSiteArgs struct {
+	TokenArgs
+	Aid 	int		`json:"aid"`
+}
+//更新站点信息
+type SiteArgs struct {
+	TokenArgs
+	Aid 	int 	`json:"aid, omitempty"`
+	Name 	string 	`json:"name"`
+	Url 	string 	`json:"url"`
 }

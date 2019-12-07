@@ -6,6 +6,6 @@ type Apps struct {
 	Name     string `json:"name" gorm:"type:varchar(64); NOT NULL UNIQUE"`
 	Url      string `json:"url" gorm:"type:varchar(64)"`
 	Icon     string `json:"icon" gorm:"type:varchar(255)"`
-	Uuid     string `json:"icon" gorm:"type:varchar(64); UNIQUE"`
+	Uuid     string `json:"uuid" gorm:"type:varchar(64); UNIQUE"`
 	CreateAt int64  `json:"create_at" gorm:"type:int(64)"`
 }

@@ -55,7 +55,7 @@ func ListAppInfo(id, pageindex, pagesize int, search string) (int, []*models.App
 
 	for rows.Next() {
 		tmp := new(models.Apps)
-		err := rows.Scan(&tmp.Id,&tmp.Uid, &tmp.Name, &tmp.Url, &tmp.Icon,&tmp.Uuid, &tmp.CreateAt)
+		err := rows.Scan(&tmp.Id,&tmp.Uid, &tmp.Name, &tmp.Url, &tmp.Icon, &tmp.Uuid, &tmp.CreateAt)
 		if err != nil {
 			return all, apps, err
 		}
@@ -77,6 +77,14 @@ func DeleteApp(id int) error {
 func ResetAppUuid(id int) error {
 	uuid := utils.NewUuid()
 	if err := db.Model(new(models.Apps)).Where("id = ?", id).Update("uuid", uuid).Error; err != nil {
+		logs.Informational(err.Error())
+		return err
+	}
+	return nil
+}
+//todo 修改App的信息
+func ChangeApp(id int, name, url, icon string) error {
+	if err := db.Model(new(models.Apps)).Where("id = ?", id).Updates(models.Apps{Name: name, Url: url, Icon: icon}).Error; err != nil {
 		logs.Informational(err.Error())
 		return err
 	}
