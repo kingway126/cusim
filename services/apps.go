@@ -3,7 +3,6 @@ package services
 import (
 	"CustomIM/models"
 	"CustomIM/utils"
-	"github.com/astaxie/beego/logs"
 	"time"
 	"errors"
 )
@@ -22,10 +21,8 @@ func NewApp(uid int, name, url, icon string) error {
 
 	//新增记录
 	if err := db.Create(&app).Error; err != nil {
-		logs.Informational(err.Error())
 		return err
 	} else if app.Id == 0 {
-		logs.Informational("添加站点失败")
 		return errors.New("添加站点失败")
 	}
 
@@ -35,7 +32,6 @@ func NewApp(uid int, name, url, icon string) error {
 func GetAppInfo(id int) (*models.Apps, error) {
 	app := new(models.Apps)
 	if err := db.Where("id = ?", id).First(&app).Error; err != nil {
-		logs.Informational(err.Error())
 		return nil, err
 	}
 	return app, nil
@@ -68,7 +64,6 @@ func ListAppInfo(id, pageindex, pagesize int, search string) (int, []*models.App
 func DeleteApp(id int) error {
 	app := models.Apps{Id: id}
 	if err := db.Delete(&app).Error; err != nil {
-		logs.Informational(err.Error())
 		return err
 	}
 	return nil
@@ -77,7 +72,6 @@ func DeleteApp(id int) error {
 func ResetAppUuid(id int) error {
 	uuid := utils.NewUuid()
 	if err := db.Model(new(models.Apps)).Where("id = ?", id).Update("uuid", uuid).Error; err != nil {
-		logs.Informational(err.Error())
 		return err
 	}
 	return nil
@@ -85,8 +79,15 @@ func ResetAppUuid(id int) error {
 //todo 修改App的信息
 func ChangeApp(id int, name, url, icon string) error {
 	if err := db.Model(new(models.Apps)).Where("id = ?", id).Updates(models.Apps{Name: name, Url: url, Icon: icon}).Error; err != nil {
-		logs.Informational(err.Error())
 		return err
 	}
 	return nil
+}
+//todo 根据uid和uuid判断是否存在该数据
+func GetAppByIdAndUuid(uid int, uuid string) (*models.Apps, error) {
+	app := new(models.Apps)
+	if err := db.Where("uid = ? AND uuid = ?", uid, uuid).First(app).Error; err != nil {
+		return nil, err
+	}
+	return app, nil
 }

@@ -1,0 +1,36 @@
+{{define "/chat"}}
+<!doctype html>
+<html>
+
+<head>
+{{template "header"}}
+</head>
+
+<body data-type="index">
+
+{{template  "top_head"}}
+<div class="tpl-page-container tpl-page-header-fixed">
+
+{{template  "slide_nav"}}
+
+    <div id="chat" class="tpl-content-wrapper">
+        <div class="tpl-content-page-title">
+            客服
+        </div>
+        <ol class="am-breadcrumb">
+            <li><a href="/index" class="am-icon-home">首页</a></li>
+            <li class="am-active">客服</li>
+        </ol>
+
+        <button @click="sendMsg()">发送消息</button>
+
+    </div>
+
+</div>
+
+
+{{template "js"}}
+<script src="/assets/js/chat.js"></script>
+</body>
+</html>
+{{end}}

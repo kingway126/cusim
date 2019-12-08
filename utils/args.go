@@ -9,6 +9,12 @@ type TokenArgs struct {
 	Id    int    `json:"id"`
 	Token string `json:"token"`
 }
+//resp
+type LoginRespArgs struct {
+	Id    int    `json:"id"`
+	Token string `json:"token"`
+	Uuid  string 	`json:"uuid"`
+}
 
 //站点清单记录  请求参数格式
 type AppArgs struct {
@@ -28,4 +34,11 @@ type SiteArgs struct {
 	Aid 	int 	`json:"aid, omitempty"`
 	Name 	string 	`json:"name"`
 	Url 	string 	`json:"url"`
+}
+//定义chat的参数
+type ChatArgs struct {
+	Id 		int 	`json:"id"`
+	Token 	string 	`json:"token, omitempty"`
+	Uuid 	string 	`json:"uuid"`
+	Role 	string 	`json："role, omitempty"`
 }

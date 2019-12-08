@@ -30,6 +30,7 @@ var login = new Vue({
                 if (res.data.code == 0) {
                     window.localStorage.setItem("id", res.data.data.id)
                     window.localStorage.setItem("token", res.data.data.token)
+                    window.localStorage.setItem("uuid", res.data.data.uuid)
                     alert("登陆成功")
                     window.location.href = "/index"
                 } else if (res.data.code == -1) {

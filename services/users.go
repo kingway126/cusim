@@ -4,7 +4,6 @@ import (
 	"CustomIM/models"
 	"CustomIM/utils"
 	"database/sql"
-	"github.com/astaxie/beego/logs"
 	"github.com/pkg/errors"
 	"time"
 )
@@ -13,7 +12,6 @@ import (
 func GetUserInfo(user string) (*models.Users, error) {
 	var users models.Users
 	if err := db.Where("user = ?", user).First(&users).Error; err != nil {
-		logs.Informational(err.Error())
 		return nil, err
 	} else if err == sql.ErrNoRows {
 		return nil, errors.New("不存在該用戶")
@@ -25,7 +23,6 @@ func GetUserInfo(user string) (*models.Users, error) {
 func GetUserInfoById(id int) (*models.Users, error) {
 	var users models.Users
 	if err := db.Where("id = ?", id).First(&users).Error; err != nil {
-		logs.Informational(err.Error())
 		return nil, err
 	} else if err == sql.ErrNoRows {
 		return nil, errors.New("不存在該用戶")
@@ -55,19 +52,31 @@ func UpdateUserToken(user string) (string, error) {
 }
 
 //todo 检测用户uuid，如果没有，自动创建
-func CheckUUID(user string) error {
+func CheckUUID(user string) (string, error) {
 	//查詢是否存在該用戶
 	var users models.Users
 	if err := db.Where("user = ?", user).First(&users).Error; users.Id == 0 {
-		return errors.New("不存在該用戶")
+		return "", errors.New("不存在該用戶")
 	} else if err != nil {
-		return err
+		return "", err
 	}
-	uuid := utils.NewUuid()
-	createat := time.Now().Unix()
-	if err := db.Model(&users).Updates(models.Users{Uuid: uuid, CreateAt: createat}).Error; err != nil {
-		return err
+	if len(users.Uuid) == 0 {
+		uuid := utils.NewUuid()
+		createat := time.Now().Unix()
+		if err := db.Model(&users).Updates(models.Users{Uuid: uuid, CreateAt: createat}).Error; err != nil {
+			return "",err
+		}
 	}
 
-	return nil
+
+	return users.Uuid, nil
+}
+
+//todo 通过uuid获取id
+func CheckChat(id int, token, uuid string) (int,error) {
+	user := new(models.Users)
+	if err := db.Where("id = ? AND hash = ? AND uuid = ?", id, token, uuid).First(user).Error; err != nil {
+		return 0, err
+	}
+	return user.Id, nil
 }

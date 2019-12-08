@@ -12,7 +12,7 @@ func LoginCheck(w http.ResponseWriter, r *http.Request) {
 	//解析请求参数
 	arg := utils.LoginArgs{}
 	if err := utils.Bind(r, &arg); err != nil {
-		logs.Informational(err.Error())
+		logs.Error(err.Error())
 		utils.RespFail(w, "请求数据格式错误！", "")
 		return
 	}
@@ -20,13 +20,13 @@ func LoginCheck(w http.ResponseWriter, r *http.Request) {
 	//判断账号是否正确
 	user, err := services.GetUserInfo(arg.User)
 	if err != nil {
-		logs.Informational(err.Error())
+		logs.Error(err.Error())
 		utils.RespFail(w, err.Error(), "")
 		return
 	}
 	sha1Pass := utils.Sha1Pwd(arg.Pass)
 	if user.Pwd != sha1Pass {
-		logs.Informational("账号或者密码错误")
+		logs.Error("账号或者密码错误")
 		utils.RespFail(w, "账号或者密码错误", "")
 		return
 	}
@@ -34,20 +34,23 @@ func LoginCheck(w http.ResponseWriter, r *http.Request) {
 	//更新token
 	token, err := services.UpdateUserToken(user.User)
 	if err != nil {
-		logs.Informational(err.Error())
+		logs.Error(err.Error())
 		utils.RespFail(w, "数据处理失败，请联系后台管理员", "")
 		return
 	}
 
 	//检测UUID
-	if err := services.CheckUUID(arg.User); err != nil {
-		logs.Informational(err.Error())
+	uuid, err := services.CheckUUID(arg.User);
+	if err != nil {
+		logs.Error(err.Error())
+		utils.RespFail(w,"系统出错，请联系管理员","")
 	}
 
 	//返回token信息
-	resp := utils.TokenArgs{
-		Id:    user.Id,
-		Token: token,
+	resp := utils.LoginRespArgs{
+		Id: user.Id,
+		Token: 	token,
+		Uuid: 	uuid,
 	}
 	utils.RespOk(w, resp, "", "/index")
 }
@@ -57,13 +60,13 @@ func CheckToken(w http.ResponseWriter, r *http.Request) {
 
 	arg := utils.TokenArgs{}
 	if err := utils.Bind(r, &arg); err != nil {
-		logs.Informational(err.Error())
+		logs.Error(err.Error())
 		utils.RespFail(w, err.Error(), "")
 		return
 	}
 	user, err := services.GetUserInfoById(arg.Id)
 	if err != nil {
-		logs.Informational(err.Error())
+		logs.Error(err.Error())
 		utils.RespFail(w, err.Error(), "")
 		return
 	}
@@ -79,7 +82,7 @@ func CheckToken(w http.ResponseWriter, r *http.Request) {
 func TokenIsRight(id int, token string) bool {
 	user, err := services.GetUserInfoById(id)
 	if err != nil {
-		logs.Informational(err.Error())
+		logs.Error(err.Error())
 		return false
 	} else if user.Hash != token {
 		return false

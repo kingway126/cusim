@@ -40,6 +40,9 @@ func main() {
 	http.HandleFunc("/api/app/update", controllers.ChangeApp)			//更新app
 	http.HandleFunc("/api/app",controllers.GetApp)						//获取app信息
 
+	http.HandleFunc("/api/chat",controllers.Chat)						//通讯
+	http.HandleFunc("/api/chat/send", controllers.Send)
+
 	//todo 文件服务注册
 	http.Handle("/assets/", http.FileServer(http.Dir(".")))
 

@@ -18,6 +18,13 @@
                     <span>站点清单</span>
                 </a>
             </li>
+
+            <li class="tpl-left-nav-item">
+                <a id="path2" href="/chat" class="nav-link">
+                    <i class="am-icon-comments-o"></i>
+                    <span>客服</span>
+                </a>
+            </li>
         </ul>
     </div>
 </div>
@@ -29,7 +36,6 @@
         var menu = document.getElementsByClassName("nav-link")
 
         for (var i = 0; i < menu.length; i++) {
-            console.log(menu[i].href)
             if (menu[i].href == url) {
                 menu[i].classList.add("active")
             }
