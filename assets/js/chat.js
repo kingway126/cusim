@@ -44,6 +44,7 @@ var chat = new Vue({
             // var url2="ws://"+location.host+"/api/chat?id="+ id + "&uuid=e1a0390f-911b-401c-8f20-2efcb8a62aaa&role=ip"
             this.webSocket = new WebSocket(url)
             //消息处理
+            
             this.webSocket.onmessage = function(evt){
                 if(evt.data.indexOf("}")>-1){
                     console.log(evt.data)
