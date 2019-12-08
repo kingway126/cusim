@@ -12,7 +12,7 @@ const (
 	DB_HOST    = "127.0.0.1"
 	DB_PORT    = "3306"
 	DB_USER    = "root"
-	DB_PASS    = "root"
+	DB_PASS    = "3isfbiEv1r<l"
 	DB_NAME    = "cim"
 	DB_CHARSET = "utf8"
 	DB_DEBUG   = true

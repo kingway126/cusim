@@ -47,5 +47,5 @@ func main() {
 	http.Handle("/assets/", http.FileServer(http.Dir(".")))
 
 	//todo 开启服务
-	http.ListenAndServe(":3000", nil)
+	http.ListenAndServe(":2222", nil)
 }

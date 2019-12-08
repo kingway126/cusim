@@ -4,6 +4,7 @@
 
 <head>
 {{template "header"}}
+    <link rel="stylesheet" href="/assets/css/chat.css">
 </head>
 
 <body data-type="index">
@@ -21,8 +22,53 @@
             <li><a href="/index" class="am-icon-home">首页</a></li>
             <li class="am-active">客服</li>
         </ol>
+        {{/*聊天室*/}}
+        <div class="chat">
+            <div class="chat-list">
+                <div class="chat-list-head">
+                    在线用户
+                </div>
+                <div class="chat-list-item chat-active">
+                    <div class="chat-list-ava">
+                        <img src="/assets/img/custom.png" alt="">
+                    </div>
+                    <div class="chat-list-name">
+                        <i class="am-icon-map-marker"></i>&nbsp;<b>255.255.255.255</b>
+                    </div>
+                    <div class="chat-list-notice">1</div>
+                </div>
+            </div>
 
-        <button @click="sendMsg()">发送消息</button>
+            <div class="chat-room">
+                <div class="chat-room-head">
+                    <div class="chat-room-head-ip">
+                        <b>IP:</b>255.255.255.255
+                    </div>
+                    <div class="chat-room-head-useremail">
+                        <div>Name: recardo</div>
+                        <div>Email: zhengjinwei681@outlook.com</div>
+                    </div>
+                </div>
+                <div class="chat-room-box">
+                    <div class="chat-room-item-left">
+                        <div class="chat-room-msg">
+                            你好，我想资讯一下
+                        </div>
+                        <div class="chat-room-time">2017-09-13 12:31</div>
+                    </div>
+                    <div class="chat-room-item-right">
+                        <div class="chat-room-msg">
+                            你好
+                        </div>
+                        <div class="chat-room-time">2017-09-13 12:45</div>
+                    </div>
+                </div>
+                <div class="chat-room-input">
+                    <input type="text" placeholder="输入消息">
+                    <div class="chat-room-send"><i style="color:#fff" class="am-icon-send-o"></i></div>
+                </div>
+            </div>
+        </div>
 
     </div>
 

@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"CustomIM/models"
 	"github.com/go-errors/errors"
+	"io"
 )
 
 //每一个用户对应一个连接节点
@@ -56,6 +57,7 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 		}
 		//获取请求的ip地址
 		ip  = utils.ParseAddr(r.RemoteAddr)
+		logs.Info("ip:", ip, "remoteaddr:", r.RemoteAddr)
 		//判断是否存在Ip用户，没有则创建
 		ipuser, err = services.FindOrCreateIpUser(app.Id, app.Uid, ip)
 		if err != nil {
@@ -104,7 +106,6 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 //todo 监听websocket消息
 func ListenWebSocket(node *Node) {
 	for {
-		logs.Info("监听websocket")
 		//监听消息
 		_, msg, err := node.Conn.ReadMessage()
 		if err != nil {
@@ -138,7 +139,6 @@ func ListenNode(node *Node) {
 				//发送消息，重置计时器
 				node.Heart.Reset(time.Minute)
 			case <- node.Close:
-				logs.Info("断开连接")
 				return
 			case <- node.Heart.C:
 				//心跳机制
@@ -167,5 +167,6 @@ func deleteNode(groupid, subid int) error {
 }
 //todo 模拟发送消息
 func Send(w http.ResponseWriter, r *http.Request) {
-	GroupClientMap[1][0].Conn.WriteMessage(websocket.TextMessage,[]byte("测试"))
+	io.WriteString(w, r.Header.Get("remoteaddr"))
+	io.WriteString(w, utils.ParseAddr(r.RemoteAddr))
 }

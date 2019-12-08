@@ -1,0 +1,119 @@
+.chat{
+    width: 100%;
+    height: 450px;
+}
+.chat .chat-list{
+    width: 30%;
+    display: inline-block;
+    background-color: #fff;
+    border-radius: 10px;
+    height: 100%;
+}
+.chat .chat-list-head{
+    padding: 10px;
+    font-size: 20px;
+    font-weight: 600;
+}
+.chat .chat-list-item{
+    width: 100%;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+.chat .chat-list-ava{
+    width: 20%;
+    display: inline-block;
+}
+.chat .chat-list-notice{
+    display: inline-block;
+    background-color: #f88b8b;
+    color: #fff;
+    border-radius: 100px;
+    padding: 0px 8px;
+    text-align: center;
+}
+.chat .chat-list-name{
+    display: inline-block;
+    width: 65%;
+    vertical-align: middle;
+}
+.chat .chat-active{
+    border-left: 2px solid #3db16b;
+}
+.chat .chat-list-ava img{
+    width: 100%;
+    border-radius: 100px;
+}
+
+.chat .chat-room{
+    width: 65%;
+    margin-left: 3%;
+    display: inline-block;
+    height: 100%;
+    vertical-align: top;
+}
+.chat .chat-room-head{
+    width: 100%;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+.chat .chat-room-box{
+    width: 100%;
+    height: 324px;
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0;
+}
+.chat .chat-room-input{
+    width: 100%;
+    height: 45px;
+    margin-top: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 4px 5px;
+}
+.chat .chat-room-input input{
+    width: 90%;
+    outline: none;
+    border: none;
+    display: inline-block;
+}
+.chat .chat-room-input .chat-room-send{
+    display: inline-block;
+    border: 0;
+    height: 30px;
+    line-height: 30px;
+    width: 30px;
+    outline: none;
+    background-color: #3db16b;
+    border-radius: 100px;
+    text-align: center;
+}
+.chat .chat-room-item-left{
+    width: 100%;
+    text-align: left;
+}
+.chat .chat-room-item-right{
+    width: 100%;
+    text-align: right;
+}
+.chat .chat-room-msg{
+    padding: 5px 10px;
+    background-color: #fff;
+    display: inline-block;
+    border-radius: 10px;
+}
+.chat .chat-room-head-ip{
+    display: inline-block;
+
+    font-size: 20px;
+    font-weight: 600;
+}
+.chat .chat-room-time{
+    font-size: 14px;
+    color: #292121;
+}
+.chat .chat-room-head-useremail{
+    display: inline-block;
+    margin-left: 20px;
+    font-size: 12px;
+    vertical-align: middle;
+}
