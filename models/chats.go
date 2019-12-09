@@ -12,9 +12,9 @@ type Chats struct {
 }
 
 const (
-	SRCTYPE_IP   = 0x00
-	SRCTYPE_USER = 0x01
+	SRCTYPE_IP   = "ip"
+	SRCTYPE_USER = "user"
 
-	READ_YES = 0x01
-	READ_NO  = 0x00
+	READ_YES = "yes"
+	READ_NO  = "no"
 )

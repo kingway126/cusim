@@ -1,13 +1,16 @@
 .chat{
     width: 100%;
-    height: 450px;
+    height: 80%;
+
 }
 .chat .chat-list{
-    width: 30%;
+    width: 25%;
     display: inline-block;
     background-color: #fff;
     border-radius: 10px;
     height: 100%;
+    min-width: 260px;
+    min-height: 545px;
 }
 .chat .chat-list-head{
     padding: 10px;
@@ -44,31 +47,39 @@
     border-radius: 100px;
 }
 
+
 .chat .chat-room{
-    width: 65%;
+    width: 70%;
     margin-left: 3%;
     display: inline-block;
     height: 100%;
     vertical-align: top;
+    height: 100%;
+    min-width: 545px;
 }
 .chat .chat-room-head{
     width: 100%;
     padding: 10px;
     border-bottom: 1px solid #ccc;
+    height: 10%;
+    min-height: 55px;
 }
 .chat .chat-room-box{
     width: 100%;
-    height: 324px;
+    height: 80%;
     border-bottom: 1px solid #ccc;
     padding: 10px 0;
+    min-height: 425px;
+    overflow-y: scroll;
 }
 .chat .chat-room-input{
     width: 100%;
-    height: 45px;
+    height: 7%;
     margin-top: 20px;
     background-color: #fff;
     border-radius: 10px;
     padding: 4px 5px;
+    min-height: 45px;
 }
 .chat .chat-room-input input{
     width: 90%;

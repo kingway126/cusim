@@ -17,10 +17,10 @@ func TestIpUserWorkFlow(t *testing.T) {
 //测试查询和创建ipuser的功能
 func testFindOrCreateIpUser(t *testing.T) {
 	for i := 1; i <= 3; i ++ {
-		id, err := FindOrCreateIpUser(3,1,"127.0.0.1")
+		ipuser, err := FindOrCreateIpUser(3,1,"127.0.0.1")
 		if err != nil {
 			t.Errorf("Error of FindOrCreate: %v", err.Error())
-		} else if id != 1 {
+		} else if ipuser.Id != 1 {
 			t.Errorf("Error of FindOrCreate: 获取结果错误")
 		}
 	}

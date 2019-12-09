@@ -9,10 +9,10 @@ import (
 	"strconv"
 	"github.com/astaxie/beego/logs"
 	"CustomIM/utils"
-	"fmt"
 	"CustomIM/models"
 	"github.com/go-errors/errors"
 	"io"
+	"encoding/json"
 )
 
 //每一个用户对应一个连接节点
@@ -23,6 +23,7 @@ type Node struct {
 	Close 	chan bool
 	GroupId 	int
 	SubId 		int
+	Aid 		int
 }
 //关系映射表
 var GroupClientMap  = make(map[int]map[int]*Node, 0)
@@ -40,6 +41,7 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 		groupid 	int
 		err 		error
 		ipuser		*models.IpUsers
+		app 		*models.Apps
 	)
 	//检验接入是否合法
 	if role == "admin" {
@@ -50,7 +52,7 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else if role == "ip" {
-		app,err := services.GetAppByIdAndUuid(id,uuid)
+		app,err = services.GetAppByIdAndUuid(id,uuid)
 		if err != nil {
 			logs.Error(err.Error())
 			return
@@ -66,7 +68,11 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	//创建连接节点
-	conn, err := (&websocket.Upgrader{}).Upgrade(w, r, nil)
+	conn, err := (&websocket.Upgrader{
+		CheckOrigin: func(r *http.Request) bool {
+			return true
+		},
+	}).Upgrade(w, r, nil)
 	if err != nil {
 		logs.Error(err.Error())
 		return
@@ -89,6 +95,8 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 		GroupClientMap[groupid][0] = node
 		rwlocker.Unlock()
 	} else if role == "ip" {
+		//存储aid
+		node.Aid = app.Id
 		node.GroupId = ipuser.Uid
 		node.SubId = ipuser.Id
 		if GroupClientMap[ipuser.Uid] == nil {
@@ -122,7 +130,7 @@ func ListenWebSocket(node *Node) {
 			return
 		}
 		//处理消息
-		parseMsg(msg)
+		parseMsg(node.SubId,[]byte(msg))
 	}
 }
 //todo 监听Node的消息
@@ -150,8 +158,57 @@ func ListenNode(node *Node) {
 	}
 }
 //todo 分发处理消息
-func parseMsg(data []byte) {
-	fmt.Println("处理消息:", string(data))
+func parseMsg(id int, data []byte) {
+	msg := new(utils.Msg)
+	err := json.Unmarshal(data, msg)
+	if err != nil {
+		logs.Error(err.Error())
+		return
+	}
+	switch msg.Cmd {
+		//发送数据
+		case utils.CMD_MSG:
+			msg.SrcId = id
+			//查找目标节点
+			rwlocker.RLock()
+			node := GroupClientMap[msg.DstGroup][msg.DstId]
+			rwlocker.RUnlock()
+			//消息持久化
+			if msg.SrcType == utils.SRCTYPE_IP {
+				err := services.AddChatMsg(node.Aid, node.SubId, node.GroupId,msg.SrcType, msg.Data, models.READ_NO,time.Now().Unix())
+				if err != nil {
+					logs.Error(err.Error())
+				}
+			} else if msg.SrcType == utils.SRCTYPE_USER {
+				//获取aid
+				ipuser, err := services.GetIpUserById(msg.DstId)
+				if err != nil {
+					logs.Error(err.Error())
+				} else if ipuser != nil {
+					err = services.AddChatMsg(ipuser.Aid, msg.DstId, node.GroupId, msg.SrcType, msg.Data, models.READ_YES, time.Now().Unix())
+					if err != nil {
+						logs.Error(err.Error())
+					}
+				}
+
+				//发送邮件通知
+			}
+			//处理消息
+			resp, err := json.Marshal(msg)
+			if err != nil {
+				logs.Error(err.Error())
+				return
+			}
+			//发送数据
+			node.Data <- resp
+			return
+		//提交表单
+		case utils.CMD_FORM:
+			return
+		case utils.CMD_NOTICE:
+			return
+	}
+
 }
 //todo 删除关系映射表的节点信息
 func deleteNode(groupid, subid int) error {
@@ -165,8 +222,29 @@ func deleteNode(groupid, subid int) error {
 
 	return nil
 }
-//todo 模拟发送消息
-func Send(w http.ResponseWriter, r *http.Request) {
+//todo 获取当前ip
+func Ip(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, r.Header.Get("remoteaddr"))
 	io.WriteString(w, utils.ParseAddr(r.RemoteAddr))
+}
+//todo 模拟发送消息
+func Send(w http.ResponseWriter, r *http.Request) {
+	rwlocker.RLock()
+	node := GroupClientMap[1][1]
+	rwlocker.RUnlock()
+	msg := utils.Msg{
+		DstGroup: 1,
+		DstId: 1,
+		SrcType: "user",
+		Cmd: "msg",
+		Data: "模拟消息",
+		Date: time.Now().Unix(),
+	}
+	send, err := json.Marshal(msg)
+	if err != nil {
+		logs.Error(err.Error())
+		io.WriteString(w, err.Error())
+		return
+	}
+	node.Conn.WriteMessage(websocket.TextMessage, send)
 }

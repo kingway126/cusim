@@ -19,3 +19,11 @@ func FindOrCreateIpUser(aid, uid int, ip string ) (*models.IpUsers, error) {
 	}
 	return &ipuser, nil
 }
+//todo 通过ipuser的id，获取记录
+func GetIpUserById(id int) (*models.IpUsers, error) {
+	ipuser := new(models.IpUsers)
+	if err := db.Where("id = ?", id).First(ipuser).Error; err != nil {
+		return nil, err
+	}
+	return ipuser, nil
+}
