@@ -35,13 +35,14 @@ func main() {
 
 	http.HandleFunc("/api/app/list", controllers.ListApp)				//获取多条app信息
 	http.HandleFunc("/api/app/delete", controllers.DeleteApp)			//删除app信息
-	http.HandleFunc("/api/app/resetuuid",controllers.UpdateAppUUID)	//更新app的uuid
+	http.HandleFunc("/api/app/resetuuid",controllers.UpdateAppUUID)		//更新app的uuid
 	http.HandleFunc("/api/app/add", controllers.NewApp)					//插入新app
 	http.HandleFunc("/api/app/update", controllers.ChangeApp)			//更新app
 	http.HandleFunc("/api/app",controllers.GetApp)						//获取app信息
 
 	http.HandleFunc("/api/chat",controllers.Chat)						//通讯
-	http.HandleFunc("/api/chat/send", controllers.Send)
+	http.HandleFunc("/api/chat/send", controllers.Send)					//模拟发送消息
+	http.HandleFunc("/api/chat/ip", controllers.Ip)						//获取请求的IP地址
 
 	//todo 文件服务注册
 	http.Handle("/assets/", http.FileServer(http.Dir(".")))

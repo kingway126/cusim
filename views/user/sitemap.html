@@ -63,7 +63,7 @@
                                 <tr v-for="app in appList">
                                     <td>${app.id}</td>
                                     <td>${app.name}</td>
-                                    <td><a href="${app.url}">${app.url}</a></td>
+                                    <td><a :href="app.url">${app.url}</a></td>
                                     <td>${app.uuid}</td>
                                     <td>${timestampToTime(app.create_at)}</td>
                                     <td>
