@@ -64,6 +64,8 @@ func CheckToken(w http.ResponseWriter, r *http.Request) {
 		utils.RespFail(w, err.Error(), "")
 		return
 	}
+	logs.Informational(arg.Id)
+	logs.Informational(arg.Token)
 	user, err := services.GetUserInfoById(arg.Id)
 	if err != nil {
 		logs.Error(err.Error())

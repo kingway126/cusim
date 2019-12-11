@@ -43,6 +43,11 @@ func main() {
 	http.HandleFunc("/api/chat",controllers.Chat)						//通讯
 	http.HandleFunc("/api/chat/send", controllers.Send)					//模拟发送消息
 	http.HandleFunc("/api/chat/ip", controllers.Ip)						//获取请求的IP地址
+	http.HandleFunc("/api/chat/list", controllers.LoadChatList)			//获取聊天记录
+	http.HandleFunc("/api/chat/read", controllers.SetChatRead)			//将聊天记录设置成已读
+
+	http.HandleFunc("/api/ipuser/list", controllers.GetIpUserList)		//获取ipuser用户最近3天链接的用户
+
 
 	//todo 文件服务注册
 	http.Handle("/assets/", http.FileServer(http.Dir(".")))

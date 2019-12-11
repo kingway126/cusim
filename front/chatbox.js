@@ -81,12 +81,12 @@ var chat = new Vue({
             }
 
             var struct = {
-                "dst_group": parseInt(this.id), 
-                "dst_id": parseInt(0), 
+                "group_id": parseInt(this.id), 
+                "ip_id": parseInt(0), 
                 "src_type": "ip", 
                 "cmd": "msg", 
-                "data": this.msg, 
-                "date": Date.parse(new Date())
+                "content": this.msg,
+                "date": (new Date()).valueOf()
             }
             this.chatList.push(struct)
             this.msg = ""

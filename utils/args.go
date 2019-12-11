@@ -42,3 +42,8 @@ type ChatArgs struct {
 	Uuid 	string 	`json:"uuid"`
 	Role 	string 	`json："role, omitempty"`
 }
+//加载聊天记录，Iid
+type ChatListArgs struct {
+	TokenArgs
+	Iid 	int
+}

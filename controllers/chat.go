@@ -23,7 +23,6 @@ type Node struct {
 	Close 	chan bool
 	GroupId 	int
 	SubId 		int
-	Aid 		int
 }
 //关系映射表
 var GroupClientMap  = make(map[int]map[int]*Node, 0)
@@ -31,7 +30,7 @@ var GroupClientMap  = make(map[int]map[int]*Node, 0)
 var rwlocker sync.RWMutex
 //todo websocket通讯接口
 func Chat(w http.ResponseWriter, r *http.Request) {
-	//获取请求的参数
+	//todo 获取请求的参数
 	params := r.URL.Query()
 	role := params.Get("role")
 	uuid := params.Get("uuid")
@@ -43,7 +42,7 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 		ipuser		*models.IpUsers
 		app 		*models.Apps
 	)
-	//检验接入是否合法
+	//todo 检验接入是否合法
 	if role == "admin" {
 		token := params.Get("token")
 		groupid, err = services.CheckChat(id, token, uuid)
@@ -59,15 +58,19 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 		}
 		//获取请求的ip地址
 		ip  = utils.ParseAddr(r.RemoteAddr)
-		logs.Info("ip:", ip, "remoteaddr:", r.RemoteAddr)
 		//判断是否存在Ip用户，没有则创建
-		ipuser, err = services.FindOrCreateIpUser(app.Id, app.Uid, ip)
+		ipuser, err = services.FindOrCreateIpUser(app.Id,app.Uid, ip)
 		if err != nil {
 			logs.Error(err.Error())
 			return
 		}
+		//更新链接时间
+		err := services.UpdateConnect(ipuser.Id)
+		if err != nil {
+			logs.Error(err.Error())
+		}
 	}
-	//创建连接节点
+	//todo 创建连接节点
 	conn, err := (&websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
 			return true
@@ -83,7 +86,7 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 		Heart:	time.NewTimer(time.Minute),
 		Close: 	make(chan bool),
 	}
-	//将键名与节点进行绑定
+	//todo 将键名与节点进行绑定
 	if role == "admin" {
 		node.GroupId = groupid
 		node.SubId = 0
@@ -95,8 +98,6 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 		GroupClientMap[groupid][0] = node
 		rwlocker.Unlock()
 	} else if role == "ip" {
-		//存储aid
-		node.Aid = app.Id
 		node.GroupId = ipuser.Uid
 		node.SubId = ipuser.Id
 		if GroupClientMap[ipuser.Uid] == nil {
@@ -106,9 +107,9 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 		GroupClientMap[ipuser.Uid][ipuser.Id] = node
 		rwlocker.Unlock()
 	}
-	//开启监听websocket协程
+	//todo 开启监听websocket协程
 	go ListenWebSocket(node)
-	//开启监听NODE协程
+	//todo 开启监听NODE协程
 	go ListenNode(node)
 }
 //todo 监听websocket消息
@@ -130,7 +131,7 @@ func ListenWebSocket(node *Node) {
 			return
 		}
 		//处理消息
-		parseMsg(node.SubId,[]byte(msg))
+		parseMsg(node,[]byte(msg))
 	}
 }
 //todo 监听Node的消息
@@ -158,49 +159,105 @@ func ListenNode(node *Node) {
 	}
 }
 //todo 分发处理消息
-func parseMsg(id int, data []byte) {
+func parseMsg(sendNode *Node, data []byte) {
+	logs.Informational("接收到消息：", string(data))
 	msg := new(utils.Msg)
 	err := json.Unmarshal(data, msg)
 	if err != nil {
 		logs.Error(err.Error())
 		return
 	}
+	//存储时间戳
+	msg.Date = time.Now().Unix()
 	switch msg.Cmd {
 		//发送数据
 		case utils.CMD_MSG:
-			msg.SrcId = id
-			//查找目标节点
-			rwlocker.RLock()
-			node := GroupClientMap[msg.DstGroup][msg.DstId]
-			rwlocker.RUnlock()
-			//消息持久化
+			//判断发送方向
+			var subid int
 			if msg.SrcType == utils.SRCTYPE_IP {
-				err := services.AddChatMsg(node.Aid, node.SubId, node.GroupId,msg.SrcType, msg.Data, models.READ_NO,time.Now().Unix())
-				if err != nil {
-					logs.Error(err.Error())
-				}
+				subid = 0
 			} else if msg.SrcType == utils.SRCTYPE_USER {
-				//获取aid
-				ipuser, err := services.GetIpUserById(msg.DstId)
-				if err != nil {
-					logs.Error(err.Error())
-				} else if ipuser != nil {
-					err = services.AddChatMsg(ipuser.Aid, msg.DstId, node.GroupId, msg.SrcType, msg.Data, models.READ_YES, time.Now().Unix())
-					if err != nil {
-						logs.Error(err.Error())
-					}
-				}
-
-				//发送邮件通知
-			}
-			//处理消息
-			resp, err := json.Marshal(msg)
-			if err != nil {
-				logs.Error(err.Error())
+				subid = msg.IpId
+			} else {
 				return
 			}
-			//发送数据
-			node.Data <- resp
+			//查找目标节点
+			rwlocker.RLock()
+			node, ok := GroupClientMap[msg.GroupID][subid]
+			rwlocker.RUnlock()
+
+			if msg.SrcType == utils.SRCTYPE_IP && ok {
+				logs.Informational("類型1")
+				//ip用户发出&&找到目标节点-》消息存储-》消息转发
+				//-》消息存储
+				if err := services.AddChatMsg(sendNode.SubId, msg.GroupID, msg.SrcType, msg.Data, models.READ_NO, time.Now().Unix()); err != nil {
+					logs.Error(err.Error())
+				}
+				//-》消息转发
+				resp, err := json.Marshal(msg)
+				if err != nil {
+					logs.Error(err.Error())
+					return
+				}
+				node.Data <- resp
+			} else if msg.SrcType == utils.SRCTYPE_IP && !ok {
+				logs.Informational("類型2")
+
+				//ip用户发出&&未找到节点-》消息存储-》通知邮件-》返回状态
+				//-》消息存储
+				if err := services.AddChatMsg(sendNode.SubId, msg.GroupID, msg.SrcType, msg.Data, models.READ_NO, time.Now().Unix()); err != nil {
+					logs.Error(err.Error())
+				}
+				//-》通知邮件
+
+				//-》返回状态
+				restruct := utils.Msg{
+					GroupID: msg.GroupID,
+					IpId: sendNode.SubId,
+					SrcType: utils.SRCTYPE_ORDER,
+					Cmd: utils.CMD_NOTICE,
+					Data: "",
+				}
+				resp, err := json.Marshal(restruct)
+				if err != nil {
+					logs.Error(err.Error())
+					return
+				}
+				sendNode.Data <- resp
+
+			} else if msg.SrcType == utils.SRCTYPE_USER && ok{
+				logs.Informational("類型3")
+				//后台用户发出&&找到目标节点-》消息存储-》消息转发
+				//-》消息存储
+				if err := services.AddChatMsg(msg.IpId, msg.GroupID, msg.SrcType, msg.Data, models.READ_NO, time.Now().Unix()); err != nil {
+					logs.Error(err.Error())
+				}
+				//-》消息转发
+				resp, err := json.Marshal(msg)
+				if err != nil {
+					logs.Error(err.Error())
+					return
+				}
+				node.Data <- resp
+			} else if msg.SrcType == utils.SRCTYPE_USER && !ok {
+				logs.Informational("類型4")
+				//后台用户发出&&未找到节点-》返回状态
+				//-》返回状态
+				restruct := utils.Msg{
+					GroupID: msg.GroupID,
+					IpId: msg.IpId,
+					SrcType: utils.SRCTYPE_ORDER,
+					Cmd: utils.CMD_NOTICE,
+					Data: "",
+				}
+				resp, err := json.Marshal(restruct)
+				if err != nil {
+					logs.Error(err.Error())
+					return
+				}
+				sendNode.Data <- resp
+			}
+
 			return
 		//提交表单
 		case utils.CMD_FORM:
@@ -230,11 +287,16 @@ func Ip(w http.ResponseWriter, r *http.Request) {
 //todo 模拟发送消息
 func Send(w http.ResponseWriter, r *http.Request) {
 	rwlocker.RLock()
-	node := GroupClientMap[1][1]
+	node, ok := GroupClientMap[1][1]
+	if !ok {
+		logs.Error("没有找到目标节点")
+		io.WriteString(w,"没有找到目标节点")
+		return
+	}
 	rwlocker.RUnlock()
 	msg := utils.Msg{
-		DstGroup: 1,
-		DstId: 1,
+		GroupID: 1,
+		IpId: 1,
 		SrcType: "user",
 		Cmd: "msg",
 		Data: "模拟消息",
@@ -247,4 +309,49 @@ func Send(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	node.Conn.WriteMessage(websocket.TextMessage, send)
+}
+//todo 加载聊天记录
+func LoadChatList (w http.ResponseWriter, r *http.Request) {
+	arg := utils.ChatListArgs{}
+	if err := utils.Bind(r, &arg); err != nil {
+		logs.Error(err.Error())
+		utils.RespFail(w, err.Error(), "")
+		return
+	}
+	//检验权限
+	if ok := TokenIsRight(arg.Id, arg.Token); !ok {
+		utils.RespFail(w, "登陆过期，请重新登陆", "/user/login")
+		return
+	}
+	//获取聊天记录
+	chats, err := services.ListChatMsg(arg.Iid, arg.Id)
+	if err != nil {
+		logs.Informational(err.Error())
+		utils.RespFail(w, err.Error(), "")
+		return
+	}
+	utils.RespOkList(w, chats, len(chats))
+}
+//todo 将单个ipuser的所有聊天记录设置成已读
+func SetChatRead(w http.ResponseWriter, r *http.Request) {
+	arg := utils.ChatListArgs{}
+	if err := utils.Bind(r, &arg); err != nil {
+		logs.Error(err.Error())
+		utils.RespFail(w, err.Error(), "")
+		return
+	}
+	//检验权限
+	if ok := TokenIsRight(arg.Id, arg.Token); !ok {
+		utils.RespFail(w, "登陆过期，请重新登陆", "/user/login")
+		return
+	}
+	//将聊天记录设置成已读
+	if err := services.ChatReadHad(arg.Iid); err != nil {
+		logs.Error(err.Error())
+		utils.RespFail(w, err.Error(), "")
+		return
+	}
+	//返回成功
+	utils.RespOk(w, nil, "", "")
+
 }

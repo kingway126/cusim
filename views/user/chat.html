@@ -24,121 +24,69 @@
         </ol>
         {{/*聊天室*/}}
         <div class="chat">
+            {{/*用户列表*/}}
             <div class="chat-list">
                 <div class="chat-list-head">
-                    在线用户
+                    用户列表
                 </div>
-                <div class="chat-list-item chat-active">
-                    <div class="chat-list-ava">
-                        <img src="/assets/img/custom.png" alt="">
-                    </div>
-                    <div class="chat-list-name">
-                        <i class="am-icon-map-marker"></i>&nbsp;<b>255.255.255.255</b>
-                    </div>
-                    <div class="chat-list-notice">1</div>
+                <div class="chat-list-user">
+                    <template v-for="(item, index) in iplist">
+                        <div @click="chat(index)" class="chat-list-item chat-active">
+                            <div class="chat-list-ava">
+                                <img src="/assets/img/custom.png" alt="">
+                            </div>
+                            <div class="chat-list-name">
+                                <i class="am-icon-map-marker"></i>&nbsp;<b>${item.ip}</b>
+                            </div>
+                            <div class="chat-list-notice">${item.no_read.Int32 == 0?"":item.no_read.Int32}</div>
+                        </div>
+                    </template>
                 </div>
+
             </div>
 
-            <div class="chat-room">
+            {{/*聊天框*/}}
+            <div class="chat-room" id="chatroom" style="display:none;">
                 <div class="chat-room-head">
                     <div class="chat-room-head-ip">
-                        <b>IP:</b>255.255.255.255
+                        <b>IP:</b>${showroom.ip}
+                    </div>
+                    <div style="display: inline-block;margin: 0px 10px;">
+                        来源站点： ${showroom.app_name}
                     </div>
                     <div class="chat-room-head-useremail">
-                        <div>Name: recardo</div>
-                        <div>Email: zhengjinwei681@outlook.com</div>
+                        <div>Name: ${showroom.name.String}</div>
+                        <div>Email: ${showroom.email.String}</div>
                     </div>
+
                 </div>
+
+
                 <div class="chat-room-box">
 
-                    <div class="chat-room-item-left">
-                        <div class="chat-room-msg">
-                            你好，我想资讯一下
-                        </div>
-                        <div class="chat-room-time">2017-09-13 12:31</div>
-                    </div>
-
-                    <div class="chat-room-item-right">
-                        <div class="chat-room-msg">
-                            你好
-                        </div>
-                        <div class="chat-room-time">2017-09-13 12:45</div>
-                    </div>
-
-                    <div class="chat-room-item-right">
-                        <div class="chat-room-msg">
-                            你好
-                        </div>
-                        <div class="chat-room-time">2017-09-13 12:45</div>
-                    </div>
-
-                    <div class="chat-room-item-right">
-                        <div class="chat-room-msg">
-                            你好
-                        </div>
-                        <div class="chat-room-time">2017-09-13 12:45</div>
-                    </div>
-
-                    <div class="chat-room-item-right">
-                        <div class="chat-room-msg">
-                            你好
-                        </div>
-                        <div class="chat-room-time">2017-09-13 12:45</div>
-                    </div>
-
-                    <div class="chat-room-item-left">
-                        <div class="chat-room-msg">
-                            你好，我想资讯一下
-                        </div>
-                        <div class="chat-room-time">2017-09-13 12:31</div>
-                    </div>
-
-                    <div class="chat-room-item-right">
-                        <div class="chat-room-msg">
-                            你好
-                        </div>
-                        <div class="chat-room-time">2017-09-13 12:45</div>
-                    </div>
-
-                    <div class="chat-room-item-right">
-                        <div class="chat-room-msg">
-                            你好
-                        </div>
-                        <div class="chat-room-time">2017-09-13 12:45</div>
-                    </div>
-
-                    <div class="chat-room-item-left">
-                        <div class="chat-room-msg">
-                            你好，我想资讯一下
-                        </div>
-                        <div class="chat-room-time">2017-09-13 12:31</div>
-                    </div>
-
-                    <div class="chat-room-item-right">
-                        <div class="chat-room-msg">
-                            你好
-                        </div>
-                        <div class="chat-room-time">2017-09-13 12:45</div>
-                    </div>
-
-                    <div class="chat-room-item-right">
-                        <div class="chat-room-msg">
-                            你好
-                        </div>
-                        <div class="chat-room-time">2017-09-13 12:45</div>
-                    </div>
-
-                    <div class="chat-room-item-left">
-                        <div class="chat-room-msg">
-                            你好，我想资讯一下
-                        </div>
-                        <div class="chat-room-time">2017-09-13 12:31</div>
-                    </div>
+                    <template v-for="msg in chatlog">
+                        <tempalte v-if="msg.src_type == 'ip'">
+                            <div class="chat-room-item-left">
+                                <div class="chat-room-msg">
+                                    ${msg.content}
+                                </div>
+                                <div class="chat-room-time">${timestampToTime(msg.create_at)}</div>
+                            </div>
+                        </tempalte>
+                        <tempalte v-if="msg.src_type == 'user'">
+                            <div class="chat-room-item-right">
+                                <div class="chat-room-msg">
+                                    ${msg.content}
+                                </div>
+                                <div class="chat-room-time">${timestampToTime(msg.create_at)}</div>
+                            </div>
+                        </tempalte>
+                    </template>
 
                 </div>
                 <div class="chat-room-input">
-                    <input type="text" placeholder="输入消息">
-                    <div class="chat-room-send"><i style="color:#fff" class="am-icon-send-o"></i></div>
+                    <input type="text" v-model="msg" placeholder="输入消息">
+                    <div @click="sendMsg()"  class="chat-room-send"><i style="color:#fff" class="am-icon-send-o"></i></div>
                 </div>
             </div>
         </div>

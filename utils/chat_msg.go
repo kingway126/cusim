@@ -16,11 +16,10 @@ const (
 )
 //消息体结构
 type Msg struct {
-	DstGroup  	int  			`json:"dst_group"`
-	SrcId   	int    			`json:"src_id, omitempty"`
-	DstId   	int    			`json:"dst_id"`
+	GroupID  	int  			`json:"group_id"`
+	IpId   	int    				`json:"ip_id"`
 	SrcType 	string 			`json:"src_type"`
 	Cmd     	string 			`json:"cmd"`
-	Data    	string 			`json:"data"`
+	Data    	string 			`json:"content"`
 	Date 		int64 			`json:"date"`
 }

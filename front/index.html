@@ -30,14 +30,14 @@
                     <div v-if="log.src_type == 'user'" class="chatbox-room-item-left">
                         <img class="chatbox-room-ava" src="http://localhost:2222/assets/img/kefu.png" alt="">
                         <div class="chatbox-room-msg">
-                            {{log.data}}
+                            {{log.content}}
                         </div>
                         <div class="chatbox-room-time">{{timestampToTime(log.date)}}</div>
                     </div>
 
                     <div v-if="log.src_type == 'ip'" class="chatbox-room-item-right">
                         <div class="chatbox-room-msg">
-                            {{log.data}}
+                            {{log.content}}
                         </div>
                         <img class="chatbox-room-ava" src="http://localhost:2222/assets/img/user.png" alt="">
                         <div class="chatbox-room-time">{{timestampToTime(log.date)}}</div>

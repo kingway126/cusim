@@ -17,14 +17,14 @@ func TestChatsWorkFlow(t *testing.T) {
 }
 // 添加聊天记录
 func testAddChatMsg(t *testing.T) {
-	err := AddChatMsg(1,1,1, "ip", "你好", models.READ_NO, 123234)
+	err := AddChatMsg(1,1, "ip", "你好", models.READ_NO, 123234)
 	if err != nil {
 		t.Errorf("Error of AddChatMsg: %v", err.Error())
 	}
 }
 // 获取所有的聊天记录
 func testListChatMsg(t *testing.T) {
-	chats, err := ListChatMsg(1, 1, 1)
+	chats, err := ListChatMsg( 1, 1)
 	if err != nil {
 		t.Errorf("Error of ListChatMsg: %v", err.Error())
 	} else if len(chats) != 1 {
