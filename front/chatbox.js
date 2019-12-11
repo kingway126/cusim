@@ -86,7 +86,7 @@ var chat = new Vue({
                 "src_type": "ip", 
                 "cmd": "msg", 
                 "content": this.msg,
-                "date": (new Date()).valueOf()
+                "create_at": (new Date()).valueOf()
             }
             this.chatList.push(struct)
             this.msg = ""

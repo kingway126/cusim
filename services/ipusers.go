@@ -47,8 +47,8 @@ func GetIpUserById(id int) (*models.IpUsers, error) {
 //todo 通过uid来查询指定connet_at时间内的用户
 func ListIpUserForTime(uid int, begin, end int64) ([]*IpUserAndApp, error) {
 	ipusers := make([]*IpUserAndApp, 0)
-	rows, err := db.Raw(`SELECT a.*,c.name AS appname, b.noread FROM ip_users AS a LEFT JOIN apps AS c ON a.aid = c.id LEFT JOIN (SELECT i.id, count(c.id) as noread FROM ip_users AS i left OUTER JOIN chats AS c ON i.id = c.iid WHERE i.uid = ? AND c.read = 'no' AND c.src_type = 'ip' GROUP BY i.id)  AS b ON a.id = b.id
- WHERE a.uid = ? AND a.connect_at > ? AND a.connect_at <= ?`, uid, uid, begin, end).Rows()
+	rows, err := db.Raw(`SELECT a.*,c.name AS appname, b.noread FROM ip_users AS a LEFT JOIN apps AS c ON a.aid = c.id LEFT JOIN (SELECT iid, count(id) as noread FROM chats  WHERE uid = ? AND chats.read = 'no' AND src_type = 'ip' GROUP BY iid)  AS b ON a.id = b.iid
+ WHERE a.uid = ? AND a.connect_at > ? AND a.connect_at <= ? ORDER BY a.connect_at DESC`, uid, uid, begin, end).Rows()
 	if err != nil {
 		return nil, err
 	}
@@ -64,4 +64,13 @@ func ListIpUserForTime(uid int, begin, end int64) ([]*IpUserAndApp, error) {
 	}
 
 	return ipusers, nil
+}
+//todo 查询ipuser的信息
+func GetIpUser(iid, uid int) (*IpUserAndApp,  error) {
+	ipuser := new(IpUserAndApp)
+
+	if err := db.Raw(`SELECT a.*, c.name as appname, b.noread FROM ip_users as a LEFT JOIN apps AS c ON a.aid = c.id LEFT JOIN (SELECT iid, COUNT(id) AS noread FROM chats WHERE iid = ? AND uid = ? GROUP BY iid) AS b ON a.id = b.iid WHERE a.id = ?`, iid, uid, iid).Scan(ipuser).Error; err != nil {
+		return nil, err
+	}
+	return ipuser, nil
 }

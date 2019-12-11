@@ -32,7 +32,7 @@
                         <div class="chatbox-room-msg">
                             {{log.content}}
                         </div>
-                        <div class="chatbox-room-time">{{timestampToTime(log.date)}}</div>
+                        <div class="chatbox-room-time">{{timestampToTime(log.create_at)}}</div>
                     </div>
 
                     <div v-if="log.src_type == 'ip'" class="chatbox-room-item-right">
@@ -40,7 +40,7 @@
                             {{log.content}}
                         </div>
                         <img class="chatbox-room-ava" src="http://localhost:2222/assets/img/user.png" alt="">
-                        <div class="chatbox-room-time">{{timestampToTime(log.date)}}</div>
+                        <div class="chatbox-room-time">{{timestampToTime(log.create_at)}}</div>
                     </div>
                 </template>
 

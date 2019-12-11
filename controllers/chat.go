@@ -160,7 +160,6 @@ func ListenNode(node *Node) {
 }
 //todo 分发处理消息
 func parseMsg(sendNode *Node, data []byte) {
-	logs.Informational("接收到消息：", string(data))
 	msg := new(utils.Msg)
 	err := json.Unmarshal(data, msg)
 	if err != nil {
@@ -193,6 +192,8 @@ func parseMsg(sendNode *Node, data []byte) {
 				if err := services.AddChatMsg(sendNode.SubId, msg.GroupID, msg.SrcType, msg.Data, models.READ_NO, time.Now().Unix()); err != nil {
 					logs.Error(err.Error())
 				}
+				//存儲自身的iid
+				msg.Iid = sendNode.SubId
 				//-》消息转发
 				resp, err := json.Marshal(msg)
 				if err != nil {

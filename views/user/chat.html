@@ -31,7 +31,7 @@
                 </div>
                 <div class="chat-list-user">
                     <template v-for="(item, index) in iplist">
-                        <div @click="chat(index)" class="chat-list-item chat-active">
+                        <div @click="chat(index)" :class="item.id==showroom.id?'chat-list-item chat-active':'chat-list-item'">
                             <div class="chat-list-ava">
                                 <img src="/assets/img/custom.png" alt="">
                             </div>
@@ -78,7 +78,7 @@
                                 <div class="chat-room-msg">
                                     ${msg.content}
                                 </div>
-                                <div class="chat-room-time">${timestampToTime(msg.create_at)}</div>
+                                <div class="chat-room-time">${timestampToTime(msg.create_at)} <i class="chat-notice" style="color:red"></i> </div>
                             </div>
                         </tempalte>
                     </template>

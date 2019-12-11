@@ -47,6 +47,7 @@ func main() {
 	http.HandleFunc("/api/chat/read", controllers.SetChatRead)			//将聊天记录设置成已读
 
 	http.HandleFunc("/api/ipuser/list", controllers.GetIpUserList)		//获取ipuser用户最近3天链接的用户
+	http.HandleFunc("/api/ipuser", controllers.GetIpUser)				//获取单个ipuser信息
 
 
 	//todo 文件服务注册

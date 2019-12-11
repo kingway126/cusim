@@ -84,11 +84,11 @@ var chat = new Vue({
             
             this.webSocket.onmessage = function(evt){
                 if(evt.data.indexOf("}")>-1){
-                    console.log(evt.data)
+                    this.do(JSON.parse(evt.data))
                 }else{
                     console.log("recv<=="+evt.data)
                 }
-            }
+            }.bind(this)
             //关闭回调
             this.webSocket.onclose=function (evt) {
                 console.log(evt.data)
@@ -105,6 +105,8 @@ var chat = new Vue({
             }
 
             var id = window.localStorage.getItem("id")
+            var time1 = (new Date()).valueOf().toString()
+            var time2 = parseInt(time1.substring(0, time1.length - 3))
             //生成結構體
             var struct = {
                 "group_id": parseInt(id),
@@ -112,7 +114,7 @@ var chat = new Vue({
                 "src_type": "user",
                 "cmd": "msg",
                 "content": this.msg,
-                "date": Date.parse(new Date()),
+                "create_at": time2,
             }
             //將消息加載到chatlog裡面
             this.chatlog.push(struct)
@@ -167,6 +169,92 @@ var chat = new Vue({
             var s = date.getSeconds();
             return Y+M+D+h+m+s;
         },
+        //处理消息
+        do: function(data) {
+            //判断消息类型
+            if (data.cmd == "notice") {
+                //如果是notic的话，给目标的最新一条消息设置未发送的状态
+                var len = this.chatlog.length
+                var msg = document.getElementsByClassName("chat-notice")
+                msg[msg.length -1].innerText = "xx"
+
+            } else if (data.cmd == "msg") {
+                //如果是msg的话，先解析是哪个ipuser的
+                var index = this.findIpuser(data.iid)
+                console.log("index:", index)
+
+                if (index != null) {
+                    //存儲iid
+                    var iid = this.iplist[index]
+                    console.log("存在")
+                    //將發送消息的ip推到頂部
+                    this.toFirst(this.iplist, index)
+
+                    //如果存在该ipuser的话
+                    console.log("showroomid:"+this.showroom.id)
+                    if (this.showroom.id != undefined || this.showroom.id == iid) {
+                        //并且就是当前展示的页面，就消息push到chatlog
+                        //將記錄添加到聊天框
+                        this.chatlog.push(data)
+                    } else {
+                        //不是当前展示的页面，就给iplist的ipuser增加一个未读消息的状态值
+                        this.iplist[index].no_read.Int32 = this.iplist[index].no_read.Int32 + 1
+                    }
+
+
+
+                } else {
+                    //如果不存在ipuser的话，获取ipuser的信息，并push到iplist表的顶部
+                    this.getIpuser(data.iid)
+                }
+            }
+
+        },
+        //获取接收到的消息对应的ipuser
+        findIpuser: function(iid) {
+            for (var i = 0; i < this.iplist.length; i++) {
+                console.log("compare: iplist.id:" + this.iplist[i].id + ", iid:", iid)
+                if (this.iplist[i].id == iid) {
+                    return i
+                }
+            }
+
+            return null
+        },
+        //將某一個元素移動到第一位
+        toFirst: function(fieldData,index) {
+
+            if(index!=0){
+                fieldData.unshift(fieldData.splice(index , 1)[0]);
+            }
+        },
+        getIpuser: function(iid) {
+            var id = window.localStorage.getItem("id")
+            var token = window.localStorage.getItem("token")
+
+            axios({
+                method: "post",
+                url: "/api/ipuser",
+                data: {
+                    "id": parseInt(id),
+                    "token": token,
+                    "iid": parseInt(iid)
+                },
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(res => {
+                if (res.data.code == -1) {
+                    alert(res.data.msg)
+                    if (res.data.url != null) {
+                        window.location.href = res.data.url
+                    }
+                } else if (res.data.code == 0) {
+                    console.log(res)
+                    this.iplist.unshift(res.data.data)
+                }
+            })
+        }
     },
     created() {
         this.checkToken()

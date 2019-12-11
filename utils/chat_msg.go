@@ -21,5 +21,7 @@ type Msg struct {
 	SrcType 	string 			`json:"src_type"`
 	Cmd     	string 			`json:"cmd"`
 	Data    	string 			`json:"content"`
-	Date 		int64 			`json:"date"`
+	Date 		int64 			`json:"create_at"`
+	Iid 		int 			`json:"iid, omitempty"`
 }
+
