@@ -35,7 +35,7 @@ var chat = new Vue({
             }
         },
         initWebSocket: function() {
-            var url="ws://"+ "localhost:2222" +"/api/chat?id=" + this.id + "&uuid=" + this.uuid + "&role=ip"
+            var url="ws://"+ "104.149.237.132:2222" +"/api/chat?id=" + this.id + "&uuid=" + this.uuid + "&role=ip"
             this.webSocket = new WebSocket(url)
             //消息处理
             this.webSocket.onmessage = function(evt){
