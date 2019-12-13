@@ -282,8 +282,7 @@ func deleteNode(groupid, subid int) error {
 }
 //todo 获取当前ip
 func Ip(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, r.Header.Get("remoteaddr"))
-	io.WriteString(w, utils.ParseAddr(r.RemoteAddr))
+	io.WriteString(w, r.Header.Get("X-Real-IP"))
 }
 //todo 模拟发送消息
 func Send(w http.ResponseWriter, r *http.Request) {
@@ -355,4 +354,13 @@ func SetChatRead(w http.ResponseWriter, r *http.Request) {
 	//返回成功
 	utils.RespOk(w, nil, "", "")
 
+}
+//todo 打印关系映射表的信息
+func DumpMap(w http.ResponseWriter, r *http.Request) {
+	for k, v := range GroupClientMap {
+		io.WriteString(w,"groupid:" +  strconv.Itoa(k))
+		for i, _ := range v {
+			io.WriteString(w, "--subid:" + strconv.Itoa(i))
+		}
+	}
 }

@@ -45,6 +45,7 @@ func main() {
 	http.HandleFunc("/api/chat/ip", controllers.Ip)						//获取请求的IP地址
 	http.HandleFunc("/api/chat/list", controllers.LoadChatList)			//获取聊天记录
 	http.HandleFunc("/api/chat/read", controllers.SetChatRead)			//将聊天记录设置成已读
+	//http.HandleFunc("/api/chat/dump", controllers.DumpMap)				//打印关系映射表
 
 	http.HandleFunc("/api/ipuser/list", controllers.GetIpUserList)		//获取ipuser用户最近3天链接的用户
 	http.HandleFunc("/api/ipuser", controllers.GetIpUser)				//获取单个ipuser信息

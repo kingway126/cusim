@@ -10,6 +10,143 @@
 </head>
 
 <body>
+    <!-- <link rel="stylesheet" href="./chatbox.css"> -->
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        .chatbox {
+            position: fixed;
+            bottom: 0;
+            right: 100px;
+            width: 320px;
+        }
+
+        .chatbox .chatbox-notice {
+            width: 78%;
+            height: 50px;
+            line-height: 50px;
+            background-color: #fff;
+            font-size: 20px;
+            font-weight: 600;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 1px 1px 3px #aa9999;
+            padding: 0 30px;
+            cursor: pointer;
+        }
+
+        .chatbox .chatbox-notice-font {
+            display: inline-block;
+            margin-left: 30%;
+        }
+
+        .chatbox .chatbox-notice-pic {
+            display: inline-block;
+            width: 30px;
+            vertical-align: middle;
+
+        }
+
+        .chatbox .chatbox-room {
+            width: 100%;
+            height: 500px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .chatbox .chatbox-room-head {
+            width: 85%;
+            height: 50px;
+            line-height: 50px;
+            padding-left: 50px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+            background-color: #50E3C2;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .chatbox .chatbox-room-head img {
+            width: 30px;
+            height: 30px;
+            vertical-align: middle;
+            margin-left: 20%;
+            cursor: pointer;
+        }
+
+        .chatbox .chatbox-room-box {
+            height: 350px;
+            background-color: #efefef;
+            border-bottom: 1px solid #ccc;
+            overflow-y: scroll;
+        }
+
+        .chatbox .chatbox-room-input {
+            height: 100px;
+            text-align: right;
+        }
+
+        .chatbox .chatbox-room-input textarea {
+            width: 98%;
+            margin-top: 5px;
+            height: 55px;
+            border: 0;
+            outline: none;
+            resize: none;
+        }
+
+        .chatbox .chatbox-room-input button {
+            height: 35px;
+            line-height: 35px;
+            width: 50px;
+            background-color: #50E3C2;
+            text-align: center;
+            border: none;
+            color: #fff;
+            border-radius: 4px;
+            outline: none;
+            margin-bottom: 5px;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+
+        .chatbox .chatbox-room-item-left {
+            text-align: left;
+            width: 95%;
+            padding: 5% 0 0 5%;
+
+        }
+
+        .chatbox .chatbox-room-item-right {
+            text-align: right;
+            width: 95%;
+            padding: 5% 0 5% 5%;
+
+        }
+
+        .chatbox .chatbox-room-ava {
+            width: 30px;
+            height: 30px;
+            vertical-align: top;
+        }
+
+        .chatbox .chatbox-room-time {
+            font-size: 10px;
+            color: #ccc;
+        }
+
+        .chatbox .chatbox-room-msg {
+            padding: 5px 10px;
+            background-color: #fff;
+            display: inline-block;
+            border-radius: 10px;
+            vertical-align: top;
+            max-width: 220px;
+            text-align: left;
+        }
+    </style>
     <div class="chatbox" id="chatbox">
         <!-- 提示框 -->
         <div @click="show()" class="chatbox-notice" id="notice" v-cloak>

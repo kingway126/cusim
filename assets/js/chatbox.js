@@ -25,7 +25,7 @@ var template1= `<style>
 
 .chatbox .chatbox-notice-font {
     display: inline-block;
-    margin-left: 30%;
+    margin-left: 15%;
 }
 
 .chatbox .chatbox-notice-pic {
@@ -44,7 +44,7 @@ var template1= `<style>
 }
 
 .chatbox .chatbox-room-head {
-    width: 85%;
+    width: 100%;
     height: 50px;
     line-height: 50px;
     padding-left: 50px;
@@ -138,14 +138,14 @@ var template1= `<style>
 <!-- 提示框 -->
 <div @click="show()" class="chatbox-notice" id="notice" v-cloak>
     <div class="chatbox-notice-font">
-        聯絡客服？
+        聯絡客服
     </div>
     <img class="chatbox-notice-pic" src="http://104.149.237.132:2222/assets/img/chat.png" alt="">
 </div>
 <!-- 聊天框 -->
 <div class="chatbox-room" id="box" style="display: none;" v-cloak>
     <div class="chatbox-room-head">
-        大中华国际医疗
+        大中華醫療服務
         <img @click="show()" src="http://104.149.237.132:2222/assets/img/min.png" alt="">
     </div>
     <div class="chatbox-room-box" id="boxcroll">
@@ -170,8 +170,8 @@ var template1= `<style>
 
     </div>
     <div class="chatbox-room-input">
-        <textarea name="msg" placeholder="请输入消息" v-model="msg"></textarea>
-        <button @click="sendMsg()">发送</button>
+        <textarea name="msg" placeholder="請輸入消息" v-model="msg"></textarea>
+        <button @click="sendMsg()">發送</button>
     </div>
 </div>
 </div>`
@@ -283,6 +283,6 @@ var chat = new Vue({
         this.initWebSocket()
     },
     mounted() {
-        // this.scrollBottom()
+        //this.scrollBottom()
     }
 })
