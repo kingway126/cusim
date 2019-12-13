@@ -12,7 +12,7 @@ const (
 	DB_HOST    = "127.0.0.1"
 	DB_PORT    = "3306"
 	DB_USER    = "root"
-	DB_PASS    = "Gcbody-0865"
+	DB_PASS    = "Recardo-0126"
 	DB_NAME    = "cim"
 	DB_CHARSET = "utf8"
 	DB_DEBUG   = true
@@ -27,7 +27,7 @@ func init() {
 	if err != nil {
 		panic(err.Error())
 	}
-	db.LogMode(DB_DEBUG)
+	//db.LogMode(DB_DEBUG)
 
 	//db.AutoMigrate(&models.Users{},&models.Chats{},&models.Emails{},&models.IpUsers{},&models.Apps{})
 

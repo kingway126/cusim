@@ -55,6 +55,7 @@
                                     <th class="table-title">名称</th>
                                     <th class="table-type">网址</th>
                                     <th class="table-date">UUID</th>
+                                    <td class="table-date">js链接</td>
                                     <th class="table-date">创建时间</th>
                                     <th class="table-set">操作</th>
                                 </tr>
@@ -65,13 +66,15 @@
                                     <td>${app.name}</td>
                                     <td><a :href="app.url">${app.url}</a></td>
                                     <td>${app.uuid}</td>
+                                    <td><input type="text" readonly="true" :value="jspath + '?id=' + window.localStorage.getItem('id') + '&uuid=' + app.uuid + '&template=1'"  :id="'cp-' + app.id" ></td>
                                     <td>${timestampToTime(app.create_at)}</td>
                                     <td>
                                         <div class="am-btn-toolbar">
                                             <div class="am-btn-group am-btn-group-xs">
                                                 <button type="button" @click="window.location.href = '/sitemap/edit?aid=' + app.id" class="am-btn am-btn-default am-btn-xs am-text-secondary"><span class="am-icon-pencil-square-o"></span> 编辑</button>
                                                 <button type="button" @click="ResetUUID(app.id)" class="am-btn am-btn-default am-btn-xs am-text-success am-text-secondary"><span class="am-icon-refresh"></span> 重置UUID</button>
-                                                <button type="button" class="am-btn am-btn-default am-btn-xs am-hide-sm-only"><span class="am-icon-copy"></span> 复制JS链接</button>
+                                                <button type="button"  @click="copyToClipboard('cp-' + app.id)"  class="am-btn am-btn-default am-btn-xs am-hide-sm-only">
+                                                    <span class="am-icon-copy"></span> 复制JS链接</button>
                                                 <button type="button" @click="DeleteSite(app.id)" class="am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only"><span class="am-icon-trash-o"></span> 删除</button>
                                             </div>
                                         </div>

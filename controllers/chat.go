@@ -57,7 +57,8 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		//获取请求的ip地址
-		ip  = utils.ParseAddr(r.RemoteAddr)
+		//ip  = utils.ParseAddr(r.RemoteAddr)
+		ip = r.Header.Get("X-Real-IP")
 		//判断是否存在Ip用户，没有则创建
 		ipuser, err = services.FindOrCreateIpUser(app.Id,app.Uid, ip)
 		if err != nil {
@@ -283,6 +284,8 @@ func deleteNode(groupid, subid int) error {
 //todo 获取当前ip
 func Ip(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, r.Header.Get("X-Real-IP"))
+	io.WriteString(w, "<br>")
+	io.WriteString(w, r.RemoteAddr)
 }
 //todo 模拟发送消息
 func Send(w http.ResponseWriter, r *http.Request) {

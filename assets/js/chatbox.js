@@ -47,7 +47,7 @@ var template1= `<style>
     width: 100%;
     height: 50px;
     line-height: 50px;
-    padding-left: 50px;
+    text-indent: 50px;
     font-size: 20px;
     font-weight: 600;
     color: #fff;
@@ -140,19 +140,19 @@ var template1= `<style>
     <div class="chatbox-notice-font">
         聯絡客服
     </div>
-    <img class="chatbox-notice-pic" src="http://104.149.237.132:2222/assets/img/chat.png" alt="">
+    <img class="chatbox-notice-pic" src="http://www.awgo.top/assets/img/chat.png" alt="">
 </div>
 <!-- 聊天框 -->
 <div class="chatbox-room" id="box" style="display: none;" v-cloak>
     <div class="chatbox-room-head">
         大中華醫療服務
-        <img @click="show()" src="http://104.149.237.132:2222/assets/img/min.png" alt="">
+        <img @click="show()" src="http://www.awgo.top/assets/img/min.png" alt="">
     </div>
     <div class="chatbox-room-box" id="boxcroll">
 
         <template v-for="log in chatList">
             <div v-if="log.src_type == 'user'" class="chatbox-room-item-left">
-                <img class="chatbox-room-ava" src="http://104.149.237.132:2222/assets/img/kefu.png" alt="">
+                <img class="chatbox-room-ava" src="http://www.awgo.top/assets/img/kefu.png" alt="">
                 <div class="chatbox-room-msg">
                     {{log.content}}
                 </div>
@@ -163,7 +163,7 @@ var template1= `<style>
                 <div class="chatbox-room-msg">
                     {{log.content}}
                 </div>
-                <img class="chatbox-room-ava" src="http://104.149.237.132:2222/assets/img/user.png" alt="">
+                <img class="chatbox-room-ava" src="http://www.awgo.top/assets/img/user.png" alt="">
                 <div class="chatbox-room-time">{{timestampToTime(log.create_at)}}</div>
             </div>
         </template>
@@ -220,7 +220,7 @@ var chat = new Vue({
             }
         },
         initWebSocket: function() {
-            var url="ws://"+ "104.149.237.132:2222" +"/api/chat?id=" + this.id + "&uuid=" + this.uuid + "&role=ip"
+            var url="wss://"+ "www.awgo.top" +"/api/chat?id=" + this.id + "&uuid=" + this.uuid + "&role=ip"
             this.webSocket = new WebSocket(url)
             //消息处理
             this.webSocket.onmessage = function(evt){

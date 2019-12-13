@@ -77,7 +77,7 @@ var chat = new Vue({
             var id = window.localStorage.getItem("id")
             var token = window.localStorage.getItem("token")
             var uuid = window.localStorage.getItem("uuid")
-            var url="ws://"+location.host+"/api/chat?id="+id+"&token=" + token + "&uuid=" + uuid + "&role=admin"
+            var url="wss://"+location.host+"/api/chat?id="+id+"&token=" + token + "&uuid=" + uuid + "&role=admin"
             // var url2="ws://"+location.host+"/api/chat?id="+ id + "&uuid=e1a0390f-911b-401c-8f20-2efcb8a62aaa&role=ip"
             this.webSocket = new WebSocket(url)
             //消息处理

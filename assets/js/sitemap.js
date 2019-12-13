@@ -7,6 +7,7 @@ var sitemap = new Vue({
         page_index: 0,
         pagelist: [],
         search: "",
+        jspath: "http://" + location.host + "/assets/js/chatbox.js"
     },
     methods: {
         //检验token
@@ -215,6 +216,26 @@ var sitemap = new Vue({
         //搜索
         searchSite: function() {
             this.LoadAppList()
+        },
+        //复制功能
+        copyToClipboard: function(elemId) {
+            var target = document.getElementById(elemId);
+            // 选择内容
+            target.focus();
+            target.setSelectionRange(0, target.value.length);
+            // 复制内容
+            var succeed;
+            try {
+                succeed = document.execCommand("copy");
+            } catch (e) {
+                succeed = false;
+            }
+            alert("复制成功")
+            return succeed;
+        },
+        //拼接id
+        pinkid: function(prefix, index) {
+            return prefix + index
         }
     },
     created() {
