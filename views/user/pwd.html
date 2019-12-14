@@ -1,0 +1,73 @@
+{{define "/pwd"}}
+<!doctype html>
+<html>
+
+<head>
+{{template "header"}}
+</head>
+
+<body >
+{{template  "top_head"}}
+<div class="tpl-page-container tpl-page-header-fixed">
+
+{{template  "slide_nav"}}
+
+    <div id="pwd" class="tpl-content-wrapper">
+        <div class="tpl-content-page-title">
+            修改密码
+        </div>
+        <ol class="am-breadcrumb">
+            <li><a href="/index" class="am-icon-home">首页</a></li>
+            <li class="am-active">修改密码</li>
+        </ol>
+        <div class="tpl-portlet-components">
+            <div class="portlet-title">
+                <div class="caption font-green bold">
+                    <span class="am-icon-code"></span> 表单
+                </div>
+            </div>
+            <div class="tpl-block ">
+
+                <div class="am-g tpl-amazeui-form">
+
+
+                    <div class="am-u-sm-12 am-u-md-9">
+                        <form class="am-form am-form-horizontal">
+                            <div class="am-form-group">
+                                <label for="user-name" class="am-u-sm-3 am-form-label">账户密码</label>
+                                <div class="am-u-sm-9">
+                                    <input type="password" name="pwd" v-model="pwd"  placeholder="账户密码">
+                                </div>
+                            </div>
+
+                            <div class="am-form-group">
+                                <label for="user-email" class="am-u-sm-3 am-form-label">再次输入</label>
+                                <div class="am-u-sm-9">
+                                    <input type="password" name="repwd" v-model="repwd"  placeholder="再次输入账户密码">
+                                </div>
+                            </div>
+
+                            <div class="am-form-group">
+                                <div class="am-u-sm-9 am-u-sm-push-3">
+                                    <button @click="updataPwd()" type="button" class="am-btn am-btn-primary">保存表单</button>
+                                    <button type="button" @click="window.location.reload()" class="am-btn am-btn-warning">重置表单</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+{{template "js"}}
+<script src="/assets/js/pwd.js"></script>
+</body>
+</html>
+{{end}}

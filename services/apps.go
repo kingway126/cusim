@@ -91,3 +91,11 @@ func GetAppByIdAndUuid(uid int, uuid string) (*models.Apps, error) {
 	}
 	return app, nil
 }
+//todo 获取所有的app数量
+func GetAllApp(uid int) (int, error) {
+	var count int
+	if err := db.Model(new(models.Apps)).Where("uid = ?", uid).Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
+}

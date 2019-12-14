@@ -80,3 +80,21 @@ func CheckChat(id int, token, uuid string) (int,error) {
 	}
 	return user.Id, nil
 }
+
+//todo 更新用户的邮箱
+func UpdateEmail(id int, email string) error {
+	if err := db.Model(new(models.Users)).Where("id = ?", id).Update("email", email).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+//todo 更新用户的密码
+func UpdatePwd(id int, pwd string) error {
+	if err := db.Model(new(models.Users)).Where("id = ?", id).Update("pwd", pwd).Error; err != nil {
+		return err
+	}
+
+	return nil
+}

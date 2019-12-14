@@ -15,7 +15,16 @@ type LoginRespArgs struct {
 	Token string `json:"token"`
 	Uuid  string 	`json:"uuid"`
 }
-
+//更新用户邮箱
+type UserInfo struct {
+	TokenArgs
+	Email 	string	`json:"email"`
+}
+//更新用户密码
+type UserPwd struct {
+	TokenArgs
+	Pwd 	string 	`json:"pwd"`
+}
 //站点清单记录  请求参数格式
 type AppArgs struct {
 	TokenArgs
@@ -46,4 +55,11 @@ type ChatArgs struct {
 type ChatListArgs struct {
 	TokenArgs
 	Iid 	int
+}
+//首页数据
+type IndexNum struct {
+	App 	int		`json:"app"`
+	User 	int		`json:"user"`
+	NoRead	int		`json:"noread"`
+	Read 	int		`json:"read"`
 }

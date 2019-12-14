@@ -12,8 +12,8 @@ const (
 	DB_HOST    = "127.0.0.1"
 	DB_PORT    = "3306"
 	DB_USER    = "root"
-	DB_PASS    = "Recardo-0126"
-	//DB_PASS	= "root"
+	//DB_PASS    = "Recardo-0126"
+	DB_PASS	= "root"
 	DB_NAME    = "cim"
 	DB_CHARSET = "utf8"
 	DB_DEBUG   = true
@@ -28,9 +28,7 @@ func init() {
 	if err != nil {
 		panic(err.Error())
 	}
-	//db.LogMode(DB_DEBUG)
-
-	//db.AutoMigrate(&models.Users{},&models.Chats{},&models.Emails{},&models.IpUsers{},&models.Apps{})
+	db.LogMode(DB_DEBUG)
 
 	db.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;").AutoMigrate(&models.Users{})
 	db.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;").AutoMigrate(&models.Chats{})

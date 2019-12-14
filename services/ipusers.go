@@ -47,7 +47,7 @@ func GetIpUserById(id int) (*models.IpUsers, error) {
 //todo 通过uid来查询指定connet_at时间内的用户
 func ListIpUserForTime(uid int, begin, end int64) ([]*IpUserAndApp, error) {
 	ipusers := make([]*IpUserAndApp, 0)
-	rows, err := db.Raw(`SELECT a.*,c.name AS appname, b.noread FROM ip_users AS a LEFT JOIN apps AS c ON a.aid = c.id LEFT JOIN (SELECT iid, count(id) as noread FROM chats  WHERE uid = ? AND chats.read = 'no' AND src_type = 'ip' GROUP BY iid)  AS b ON a.id = b.iid
+	rows, err := db.Raw(`SELECT a.*,c.name AS appname, b.noread FROM ip_users AS a LEFT JOIN apps AS c ON a.aid = c.id LEFT JOIN (SELECT iid, count(id) as noread FROM chats  WHERE uid = ? AND chats.isread = 'no' AND src_type = 'ip' GROUP BY iid)  AS b ON a.id = b.iid
  WHERE a.uid = ? AND a.connect_at > ? AND a.connect_at <= ? ORDER BY a.connect_at DESC`, uid, uid, begin, end).Rows()
 	if err != nil {
 		return nil, err
@@ -73,4 +73,12 @@ func GetIpUser(iid, uid int) (*IpUserAndApp,  error) {
 		return nil, err
 	}
 	return ipuser, nil
+}
+//todo 拆线呢ipuser的数量
+func GetIpUserNum(uid int) (int, error) {
+	var count int
+	if err := db.Model(new(models.IpUsers)).Where("uid = ?", uid).Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
 }

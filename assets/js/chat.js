@@ -196,12 +196,12 @@ var chat = new Vue({
                         //并且就是当前展示的页面，就消息push到chatlog
                         //將記錄添加到聊天框
                         this.chatlog.push(data)
+                        //并将消息设置成已读
+                        this.setRead(this.showroom)
                     } else {
                         //不是当前展示的页面，就给iplist的ipuser增加一个未读消息的状态值
                         this.iplist[index].no_read.Int32 = this.iplist[index].no_read.Int32 + 1
                     }
-
-
 
                 } else {
                     //如果不存在ipuser的话，获取ipuser的信息，并push到iplist表的顶部
@@ -209,6 +209,29 @@ var chat = new Vue({
                 }
             }
 
+        },
+        //将消息设置成已读
+        setRead: function(iid) {
+            var id = window.localStorage.getItem("id")
+            var token = window.localStorage.getItem("token")
+            axios({
+                method: "post",
+                url: "/api/chats/read",
+                data: {
+                    "id": parseInt(id),
+                    "token": token,
+                    "iid": iid
+                },
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(res => {
+                if (res.data.code == -1) {
+                    if (res.data.path != null) {
+                        window.location.href = res.data.path
+                    }
+                }
+            })
         },
         //获取接收到的消息对应的ipuser
         findIpuser: function(iid) {

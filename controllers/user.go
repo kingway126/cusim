@@ -5,6 +5,7 @@ import (
 	"CustomIM/services"
 	"CustomIM/utils"
 	"github.com/astaxie/beego/logs"
+	"CustomIM/models"
 )
 
 //todo 登陆api
@@ -54,7 +55,6 @@ func LoginCheck(w http.ResponseWriter, r *http.Request) {
 	}
 	utils.RespOk(w, resp, "", "/index")
 }
-
 //todo 鉴权api
 func CheckToken(w http.ResponseWriter, r *http.Request) {
 
@@ -64,8 +64,6 @@ func CheckToken(w http.ResponseWriter, r *http.Request) {
 		utils.RespFail(w, err.Error(), "")
 		return
 	}
-	logs.Informational(arg.Id)
-	logs.Informational(arg.Token)
 	user, err := services.GetUserInfoById(arg.Id)
 	if err != nil {
 		logs.Error(err.Error())
@@ -90,4 +88,115 @@ func TokenIsRight(id int, token string) bool {
 		return false
 	}
 	return true
+}
+//todo 获取用户信息
+func UserInfo(w http.ResponseWriter, r *http.Request) {
+	arg := utils.TokenArgs{}
+	if err := utils.Bind(r, &arg); err != nil {
+		logs.Error(err.Error())
+		utils.RespFail(w, err.Error(), "")
+		return
+	}
+	//检验权限
+	if ok := TokenIsRight(arg.Id, arg.Token); !ok {
+		utils.RespFail(w, "登陆过期，请重新登陆", "/user/login")
+		return
+	}
+	//获取用户的信息
+	user, err := services.GetUserInfoById(arg.Id)
+	if err != nil {
+		utils.RespFail(w, "获取数据失败", "")
+		logs.Error(err.Error())
+		return
+	}
+	utils.RespOk(w, user, "", "")
+}
+//todo 更新用户邮箱
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	arg := utils.UserInfo{}
+	if err := utils.Bind(r, &arg); err != nil {
+		logs.Error(err.Error())
+		utils.RespFail(w, err.Error(), "")
+		return
+	}
+	//检验权限
+	if ok := TokenIsRight(arg.Id, arg.Token); !ok {
+		utils.RespFail(w, "登陆过期，请重新登陆", "/user/login")
+		return
+	}
+	//更新用户邮箱
+	if err := services.UpdateEmail(arg.Id, arg.Email); err != nil {
+		utils.RespFail(w, "更新账户失败", "")
+		logs.Error(err.Error())
+		return
+	}
+
+	utils.RespOk(w, nil, "更新账户成功", "")
+}
+//todo 更新用户密码
+func UpdateUserPwd(w http.ResponseWriter, r *http.Request) {
+	arg := utils.UserPwd{}
+	if err := utils.Bind(r, &arg); err != nil {
+		logs.Error(err.Error())
+		utils.RespFail(w, err.Error(), "")
+		return
+	}
+	//检验权限
+	if ok := TokenIsRight(arg.Id, arg.Token); !ok {
+		utils.RespFail(w, "登陆过期，请重新登陆", "/user/login")
+		return
+	}
+	//加密密码
+	pwd := utils.Sha1Pwd(arg.Pwd)
+	//更新密码
+	if err := services.UpdatePwd(arg.Id, pwd); err != nil {
+		utils.RespFail(w, "修改密码失败", "")
+		logs.Error(err.Error())
+		return
+	}
+
+	utils.RespOk(w, nil, "修改密码成功", "/pwd")
+}
+//todo 获取首页用户的信息
+func GetIndexNum(w http.ResponseWriter, r *http.Request) {
+	arg := utils.TokenArgs{}
+	if err := utils.Bind(r, &arg); err != nil {
+		logs.Error(err.Error())
+		utils.RespFail(w, err.Error(), "")
+		return
+	}
+	//检验权限
+	if ok := TokenIsRight(arg.Id, arg.Token); !ok {
+		utils.RespFail(w, "登陆过期，请重新登陆", "/user/login")
+		return
+	}
+
+	index := new(utils.IndexNum)
+	var err error
+	//查app数量
+	if index.App, err = services.GetAllApp(arg.Id); err != nil {
+		utils.RespFail(w, "获取数据失败", "")
+		logs.Error(err.Error())
+		return
+	}
+	//查ipuser数量
+	if index.User, err = services.GetIpUserNum(arg.Id); err != nil {
+		utils.RespFail(w, "获取数据失败", "")
+		logs.Error(err.Error())
+		return
+	}
+	//查未读消息数量
+	if index.NoRead, err = services.GetNoReadNum(arg.Id, models.READ_NO); err != nil {
+		utils.RespFail(w, "获取数据失败", "")
+		logs.Error(err.Error())
+		return
+	}
+	//查所有消息数量
+	if index.Read, err = services.GetAllNum(arg.Id); err != nil {
+		utils.RespFail(w, "获取数据失败", "")
+		logs.Error(err.Error())
+		return
+	}
+
+	utils.RespOk(w, index, "", "")
 }

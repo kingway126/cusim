@@ -24,6 +24,8 @@ type Node struct {
 	GroupId 	int
 	SubId 		int
 }
+//邮件发送冷却时间map
+var MailCool = make(map[int]int64)
 //关系映射表
 var GroupClientMap  = make(map[int]map[int]*Node, 0)
 //读写锁
@@ -211,13 +213,7 @@ func parseMsg(sendNode *Node, data []byte) {
 					logs.Error(err.Error())
 				}
 				//-》通知邮件,获取需要接收的邮件
-				user, err := services.GetUserInfoById(msg.GroupID)
-				if err != nil {
-					logs.Error(err.Error())
-				} else if len(user.Email) != 0 {
-					utils.SendMsg("CustomIM-通知：有客户发来消息！","CustomIM-通知：有客户发来消息！",user.Email)
-				}
-
+				CoolSendMail(sendNode.GroupId)
 				//-》返回状态
 				restruct := utils.Msg{
 					GroupID: msg.GroupID,
@@ -372,4 +368,69 @@ func DumpMap(w http.ResponseWriter, r *http.Request) {
 			io.WriteString(w, "--subid:" + strconv.Itoa(i))
 		}
 	}
+}
+//todo 发送邮件并设置冷却信息
+func CoolSendMail(uid int) {
+	//先获取冷却信息
+	rwlocker.RLock()
+	cool, ok := MailCool[uid]
+	rwlocker.RUnlock()
+	if ok && cool <= time.Now().Unix() {
+		return
+	}
+
+	user, err := services.GetUserInfoById(uid)
+	if err != nil {
+		logs.Error(err.Error())
+	} else if len(user.Email) != 0 {
+		utils.SendMsg("CustomIM-通知：有客户发来消息！","CustomIM-通知：有客户发来消息！",user.Email)
+	}
+
+	rwlocker.Lock()
+	MailCool[uid] = time.Now().Unix() + (10 * 60)
+	rwlocker.Unlock()
+
+}
+//todo 将所有的消息设置成已读
+func SetUserChatRead(w http.ResponseWriter, r *http.Request) {
+	arg := new(utils.ChatListArgs)
+	if err := utils.Bind(r, arg); err != nil {
+		utils.RespFail(w, "请求参数错误","")
+		return
+	}
+
+	//检验权限
+	if ok := TokenIsRight(arg.Id, arg.Token); !ok {
+		utils.RespFail(w, "登陆过期，请重新登陆", "/user/login")
+		return
+	}
+	//将消息设置成已读
+	if err := services.SetReadAll(arg.Id, arg.Iid); err != nil {
+		utils.RespFail(w, "", "")
+		logs.Error(err.Error())
+		return
+	}
+	utils.RespOk(w, nil, "", "")
+}
+//todo 获取未读消息的数量
+func GetNoReadNum(w http.ResponseWriter, r *http.Request) {
+	arg := new(utils.TokenArgs)
+	if err := utils.Bind(r, arg); err != nil {
+		utils.RespFail(w, "请求参数错误","")
+		return
+	}
+
+	//检验权限
+	if ok := TokenIsRight(arg.Id, arg.Token); !ok {
+		utils.RespFail(w, "登陆过期，请重新登陆", "/user/login")
+		return
+	}
+	//获取未读消息的条数
+	num, err := services.GetNoReadNum(arg.Id, models.READ_NO)
+	if err != nil {
+		utils.RespFail(w, "", "")
+		logs.Error(err.Error())
+		return
+	}
+	utils.RespOk(w, num, "", "")
 }
