@@ -210,7 +210,13 @@ func parseMsg(sendNode *Node, data []byte) {
 				if err := services.AddChatMsg(sendNode.SubId, msg.GroupID, msg.SrcType, msg.Data, models.READ_NO, time.Now().Unix()); err != nil {
 					logs.Error(err.Error())
 				}
-				//-》通知邮件
+				//-》通知邮件,获取需要接收的邮件
+				user, err := services.GetUserInfoById(msg.GroupID)
+				if err != nil {
+					logs.Error(err.Error())
+				} else if len(user.Email) != 0 {
+					utils.SendMsg("CustomIM-通知：有客户发来消息！","CustomIM-通知：有客户发来消息！",user.Email)
+				}
 
 				//-》返回状态
 				restruct := utils.Msg{

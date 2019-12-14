@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"text/template"
 	"CustomIM/controllers"
+	"CustomIM/utils"
 )
 
 //模板自动注册函数
@@ -29,13 +30,16 @@ func main() {
 	//todo 模板注册
 	RegisterView()
 
+	//todo 启动邮件服务
+	utils.MailInit()
+
 	//todo api注册
 	http.HandleFunc("/api/login", controllers.LoginCheck) 				//登陆路由
 	http.HandleFunc("/api/user/check", controllers.CheckToken)			//检验权限
 
 	http.HandleFunc("/api/app/list", controllers.ListApp)				//获取多条app信息
 	http.HandleFunc("/api/app/delete", controllers.DeleteApp)			//删除app信息
-	http.HandleFunc("/api/app/resetuuid",controllers.UpdateAppUUID)		//更新app的uuid
+	http.HandleFunc("/api/app/resetuuid",controllers.UpdateAppUUID)	//更新app的uuid
 	http.HandleFunc("/api/app/add", controllers.NewApp)					//插入新app
 	http.HandleFunc("/api/app/update", controllers.ChangeApp)			//更新app
 	http.HandleFunc("/api/app",controllers.GetApp)						//获取app信息
@@ -49,6 +53,8 @@ func main() {
 
 	http.HandleFunc("/api/ipuser/list", controllers.GetIpUserList)		//获取ipuser用户最近3天链接的用户
 	http.HandleFunc("/api/ipuser", controllers.GetIpUser)				//获取单个ipuser信息
+
+	http.HandleFunc("/api/email/send", controllers.SendEmail)			//模拟发送邮件
 
 
 	//todo 文件服务注册

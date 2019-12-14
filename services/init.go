@@ -13,6 +13,7 @@ const (
 	DB_PORT    = "3306"
 	DB_USER    = "root"
 	DB_PASS    = "Recardo-0126"
+	//DB_PASS	= "root"
 	DB_NAME    = "cim"
 	DB_CHARSET = "utf8"
 	DB_DEBUG   = true

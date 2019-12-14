@@ -6,8 +6,9 @@ var template1= `<style>
 .chatbox {
     position: fixed;
     bottom: 0;
-    right: 100px;
-    width: 320px;
+    right: 5%;
+    min-width: 250px;
+    width: 10%;
 }
 
 .chatbox .chatbox-notice {
@@ -37,17 +38,18 @@ var template1= `<style>
 
 .chatbox .chatbox-room {
     width: 100%;
-    height: 500px;
+    height: 400px;
     background-color: #fff;
     border: 1px solid #ccc;
     border-radius: 10px 10px 0 0;
+    min-width: 250px;
 }
 
 .chatbox .chatbox-room-head {
     width: 100%;
     height: 50px;
     line-height: 50px;
-    text-indent: 50px;
+    text-indent: 10px;
     font-size: 20px;
     font-weight: 600;
     color: #fff;
@@ -64,7 +66,7 @@ var template1= `<style>
 }
 
 .chatbox .chatbox-room-box {
-    height: 350px;
+    height: 240px;
     background-color: #efefef;
     border-bottom: 1px solid #ccc;
     overflow-y: scroll;
