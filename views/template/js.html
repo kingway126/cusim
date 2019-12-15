@@ -5,34 +5,4 @@
 <script src="/assets/js/app.js"></script>
 <script src="/assets/js/vue.min.js"></script>
 <script src="/assets/js/axios.min.js"></script>
-<script>
-    window.setInterval(myFunction, 1000 * 5);
-    var i = 1;
-
-    function myFunction() {
-        console.log("轮训任务=================>" + i++);
-        var id = window.localStorage.getItem("id")
-        var token = window.localStorage.getItem("token")
-        axios({
-            method: "post",
-            url: "/api/chat/noread",
-            data: {
-                "id": parseInt(id),
-                "token": token,
-            },
-            headers: {
-                "Content-Type": "application/json"
-            }
-        }).then(res => {
-            if (res.data.code == -1) {
-                alert(res.data.msg)
-                if (res.data.path != null) {
-                    window.location.href = res.data.path
-                }
-            } else if (res.data.code == 0) {
-                document.getElementById("tipnum").innerText = res.data.data
-            }
-        })
-    }
-</script>
 {{end}}

@@ -122,6 +122,7 @@ var chat = new Vue({
             this.msg = ""
             //發送消息
             this.webSocket.send(JSON.stringify(struct))
+            this.scrollBottom()
         },
         //聊天
         chat: function(id) {
@@ -157,6 +158,7 @@ var chat = new Vue({
                     this.chatlog = res.data.rows
                 }
             })
+            this.scrollBottom()
         },
         //将时间戳转换成日期时间
         timestampToTime: function(timestamp) {
@@ -168,6 +170,11 @@ var chat = new Vue({
             var m = date.getMinutes() + ':';
             var s = date.getSeconds();
             return Y+M+D+h+m+s;
+        },
+        scrollBottom: function() {
+            var ele = document.getElementById('boxindex');
+            console.log("top:", ele.scrollTop, "|height:", ele.scrollHeight)
+            ele.scrollTop = ele.scrollHeight;
         },
         //处理消息
         do: function(data) {
@@ -207,6 +214,7 @@ var chat = new Vue({
                     //如果不存在ipuser的话，获取ipuser的信息，并push到iplist表的顶部
                     this.getIpuser(data.iid)
                 }
+                this.scrollBottom()
             }
 
         },
@@ -226,11 +234,7 @@ var chat = new Vue({
                     "Content-Type": "application/json"
                 }
             }).then(res => {
-                if (res.data.code == -1) {
-                    if (res.data.path != null) {
-                        window.location.href = res.data.path
-                    }
-                }
+
             })
         },
         //获取接收到的消息对应的ipuser
@@ -283,5 +287,6 @@ var chat = new Vue({
         this.checkToken()
         this.initChatList()
         this.initwebsocket()
+        this.scrollBottom()
     }
 })

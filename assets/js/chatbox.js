@@ -150,7 +150,7 @@ var template1= `<style>
         大中華醫療服務
         <img @click="show()" src="http://www.awgo.top/assets/img/min.png" alt="">
     </div>
-    <div class="chatbox-room-box" id="boxcroll">
+    <div class="chatbox-room-box" id="boxindex">
 
         <template v-for="log in chatList">
             <div v-if="log.src_type == 'user'" class="chatbox-room-item-left">
@@ -232,6 +232,7 @@ var chat = new Vue({
                     if (document.getElementById("box").style.display == "none") {
                         alert("你有一条新的消息")
                     }
+                    this.scrollBottom()
                 }else{
                     console.log("recv<=="+evt.data)
                 }
@@ -246,9 +247,8 @@ var chat = new Vue({
             }
         },
         scrollBottom: function() {
-            // document.getElementById("boxcroll").scrollTop = document.getElementById("boxcroll").scrollHeight
-            console.log(document.getElementById("boxcroll").innerHTML)
-            $("#boxcroll").scrollTop($("#boxcroll")[0].scrollHeight);
+            var ele = document.getElementById('boxindex');
+            ele.scrollTop = ele.scrollHeight;
         },
         //将时间戳转换成日期时间
         timestampToTime: function(timestamp) {
@@ -278,11 +278,15 @@ var chat = new Vue({
             this.chatList.push(struct)
             this.msg = ""
             this.webSocket.send(JSON.stringify(struct))
+            this.scrollBottom()
         },
+        //滚动到底部
+
     },
     created() {
         this.getValue()
         this.initWebSocket()
+        this.scrollBottom()
     },
     mounted() {
         //this.scrollBottom()
