@@ -1,0 +1,151 @@
+[v-cloak]{  
+    display: none;  
+}  
+
+.chatbox {
+    position: fixed;
+    bottom: 100px;
+    right: 80px;
+}
+
+.chatbox .chatbox-notice{
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+}
+.chatbox .chatbox-notice img{
+    width: 100%;
+    height: 100%;
+}
+.chatbox .chatbox-notice-font{
+    display: inline-block;
+    margin-left: 30%;
+}
+.chatbox .chatbox-notice-pic{
+    display: inline-block;
+    width: 30px;
+    vertical-align: middle;
+
+}
+
+.chatbox .chatbox-room{
+    width: 400px;
+    height: 350px;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 1px 1px 20px #9c9999;;
+    position: fixed;
+    bottom: 180px;
+    right: 50px;
+}
+.chatbox .chatbox-room-head{
+    height: 49px;
+    line-height: 49px;
+    background-color: #177CB0;
+    border-radius: 10px 10px 0 0;
+}
+.chatbox .chatbox-head-tit{
+    display: inline-block;
+    color: #7F7F7F;
+}
+.chatbox .chatbox-close{
+    width: 25px;
+    height: 25px;
+    position: absolute;
+    line-height: 34px;
+    right: 5px;
+    top: 14px;
+    text-align: center;
+    border-radius: 100px;
+    background-color: #E4E4E4;
+}
+.chatbox .chatbox-room-head img{
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    -ms-overflow-style: none;
+}
+.chatbox .chatbox-room-box{
+    height: 244px;
+    overflow-y: scroll;
+}
+
+.chatbox-room-box::-webkit-scrollbar {
+    display: none;
+}
+
+.chatbox .chatbox-room-input{
+    padding: 5px;
+    height: 40px;
+    display: none;
+}
+.chatbox .chatbox-room-input input{
+    width: 85%;
+    margin-top: 5px;
+    height: 100%;
+    border: 0;
+    outline: none;
+    resize:  none;
+}
+.chatbox .chatbox-room-input button{
+    height: 35px;
+    line-height: 35px;
+    width: 50px;
+    background-color: #50E3C2;
+    text-align: center;
+    border: none;
+    color:#fff;
+    border-radius: 4px;
+    outline: none;
+    margin-bottom: 5px;
+    margin-right: 5px;
+    cursor: pointer;
+}
+.chatbox .chatbox-room-item-left{
+    text-align: left;
+    width: 95%;
+    padding: 10px 0 0 5%;
+
+}
+.chatbox .chatbox-room-item-right{
+    text-align: right;
+    width: 95%;
+    padding: 10px 0 5% 5%;
+    
+}
+.chatbox .chatbox-room-ava{
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+}
+.chatbox .chatbox-room-time{
+    font-size: 10px;
+    color: #ccc;
+}
+.chatbox .chatbox-room-msg{
+    padding: 5px 10px;
+    background-color: #E4E4E4;
+    display: inline-block;
+    border-radius: 10px;
+    vertical-align: middle;
+    max-width: 300px;
+    text-align: left;
+}
+.chatbox .chatbox-room-btn{
+    display: inline-block;
+    color: #7F7F7F;
+    cursor: pointer;
+}
+.chatbox .chatbox-init{
+    background-color: #177CB0;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    border-radius: 10px;
+    color: #fff;
+    width: 50%;
+    position: absolute;
+    top: 130px;
+    left: 25%;
+    cursor: pointer;
+}

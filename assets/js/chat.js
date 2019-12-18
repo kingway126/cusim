@@ -204,7 +204,7 @@ var chat = new Vue({
                         //將記錄添加到聊天框
                         this.chatlog.push(data)
                         //并将消息设置成已读
-                        this.setRead(this.showroom)
+                        this.setRead(this.showroom.id)
                     } else {
                         //不是当前展示的页面，就给iplist的ipuser增加一个未读消息的状态值
                         this.iplist[index].no_read.Int32 = this.iplist[index].no_read.Int32 + 1

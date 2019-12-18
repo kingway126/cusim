@@ -16,16 +16,18 @@ type Mail struct {
 }
 
 const (
-	HOST 	= "smtp.qq.com"
-	NAME 	= "1098977435@qq.com"
+	HOST 	= "smtp.exmail.qq.com"
+	NAME 	= "recardo@supernovachina.com"
 	PORT 	= 465
-	SECRET = "cdwjczoxpawfjaei"
+	SECRET = "PEV9cg5vry5cNYsf"
 )
+
 
 var mailAuto *Mail
 
 //todo 初始化邮件发送功能
 func MailInit()  {
+
 	//初始化Mail
 	mailAuto = new(Mail)
 	mailAuto.Work = 0

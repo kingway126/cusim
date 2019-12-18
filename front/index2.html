@@ -6,29 +6,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <link rel="stylesheet" href="./chatbox.css">
+    <link rel="stylesheet" href="./chatbox2.css">
 </head>
 
 <body>
     <div class="chatbox" id="chatbox">
         <!-- 提示框 -->
-        <div @click="show()" class="chatbox-notice" id="notice" v-cloak>
-            <div class="chatbox-notice-font">
-                聯絡客服？
-            </div>
-            <img class="chatbox-notice-pic" src="http://localhost:2222/assets/img/chat.png" alt="">
+        <div @click="show2()" class="chatbox-notice" id="notice" v-cloak>
+            <img class="chatbox-notice-pic" src="./btn2.png" alt="">
         </div>
         <!-- 聊天框 -->
         <div class="chatbox-room" id="box" style="display: none;" v-cloak>
             <div class="chatbox-room-head">
-                大中华国际医疗
-                <img @click="show()" src="http://localhost:2222/assets/img/min.png" alt="">
+                <div class="chatbox-head-tit">
+                   <img src="./tit1.png" alt="" style="width:200px !important;height: 50px;">
+                </div>
+                <div class="chatbox-close">
+                    <img @click="show2()" src="http://cus.gcbodycheck.com/assets/img/close.png" alt="">
+                </div>
             </div>
             <div class="chatbox-room-box" id="boxcroll">
 
                 <template v-for="log in chatList">
                     <div v-if="log.src_type == 'user'" class="chatbox-room-item-left">
-                        <img class="chatbox-room-ava" src="http://localhost:2222/assets/img/kefu.png" alt="">
+                        <img class="chatbox-room-ava" src="http://cus.gcbodycheck.com/assets/img/kefu.png" alt="">
                         <div class="chatbox-room-msg">
                             {{log.content}}
                         </div>
@@ -39,15 +40,20 @@
                         <div class="chatbox-room-msg">
                             {{log.content}}
                         </div>
-                        <img class="chatbox-room-ava" src="http://localhost:2222/assets/img/user.png" alt="">
+                        <img class="chatbox-room-ava" src="http://cus.gcbodycheck.com/assets/img/user.png" alt="">
                         <div class="chatbox-room-time">{{timestampToTime(log.create_at)}}</div>
                     </div>
                 </template>
 
             </div>
-            <div class="chatbox-room-input">
-                <textarea name="msg" placeholder="请输入消息" v-model="msg"></textarea>
-                <button @click="sendMsg()">发送</button>
+            <div class="chatbox-room-input" id="msginput">
+                <input name="msg" placeholder="請輸入消息" v-model="msg">
+                <div class="chatbox-room-btn" @click="sendMsg()">
+                    發送
+                </div>
+            </div>
+            <div class="chatbox-init" @click="beginChat()" id="beginchat">
+                聯絡亚翰医疗服务集团
             </div>
         </div>
     </div>

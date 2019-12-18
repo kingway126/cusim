@@ -1,180 +1,3 @@
-var template1= `<style>
-[v-cloak] {
-    display: none;
-}
-
-.chatbox {
-    position: fixed;
-    bottom: 0;
-    right: 100px;
-    width: 320px;
-}
-
-.chatbox .chatbox-notice {
-    width: 78%;
-    height: 50px;
-    line-height: 50px;
-    background-color: #fff;
-    font-size: 20px;
-    font-weight: 600;
-    border-radius: 10px 10px 0 0;
-    box-shadow: 1px 1px 3px #aa9999;
-    padding: 0 30px;
-    cursor: pointer;
-}
-
-.chatbox .chatbox-notice-font {
-    display: inline-block;
-    margin-left: 30%;
-}
-
-.chatbox .chatbox-notice-pic {
-    display: inline-block;
-    width: 30px;
-    vertical-align: middle;
-
-}
-
-.chatbox .chatbox-room {
-    width: 100%;
-    height: 500px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 10px 10px 0 0;
-}
-
-.chatbox .chatbox-room-head {
-    width: 85%;
-    height: 50px;
-    line-height: 50px;
-    padding-left: 50px;
-    font-size: 20px;
-    font-weight: 600;
-    color: #fff;
-    background-color: #50E3C2;
-    border-radius: 10px 10px 0 0;
-}
-
-.chatbox .chatbox-room-head img {
-    width: 30px;
-    height: 30px;
-    vertical-align: middle;
-    margin-left: 20%;
-    cursor: pointer;
-}
-
-.chatbox .chatbox-room-box {
-    height: 350px;
-    background-color: #efefef;
-    border-bottom: 1px solid #ccc;
-    overflow-y: scroll;
-}
-
-.chatbox .chatbox-room-input {
-    height: 100px;
-    text-align: right;
-}
-
-.chatbox .chatbox-room-input textarea {
-    width: 98%;
-    margin-top: 5px;
-    height: 55px;
-    border: 0;
-    outline: none;
-    resize: none;
-}
-
-.chatbox .chatbox-room-input button {
-    height: 35px;
-    line-height: 35px;
-    width: 50px;
-    background-color: #50E3C2;
-    text-align: center;
-    border: none;
-    color: #fff;
-    border-radius: 4px;
-    outline: none;
-    margin-bottom: 5px;
-    margin-right: 5px;
-    cursor: pointer;
-}
-
-.chatbox .chatbox-room-item-left {
-    text-align: left;
-    width: 95%;
-    padding: 5% 0 0 5%;
-
-}
-
-.chatbox .chatbox-room-item-right {
-    text-align: right;
-    width: 95%;
-    padding: 5% 0 5% 5%;
-
-}
-
-.chatbox .chatbox-room-ava {
-    width: 30px;
-    height: 30px;
-    vertical-align: top;
-}
-
-.chatbox .chatbox-room-time {
-    font-size: 10px;
-    color: #ccc;
-}
-
-.chatbox .chatbox-room-msg {
-    padding: 5px 10px;
-    background-color: #fff;
-    display: inline-block;
-    border-radius: 10px;
-    vertical-align: top;
-    max-width: 220px;
-    text-align: left;
-}
-</style>
-<div class="chatbox" id="chatbox">
-<!-- 提示框 -->
-<div @click="show()" class="chatbox-notice" id="notice" v-cloak>
-    <div class="chatbox-notice-font">
-        聯絡客服？
-    </div>
-    <img class="chatbox-notice-pic" src="http://104.149.237.132:2222/assets/img/chat.png" alt="">
-</div>
-<!-- 聊天框 -->
-<div class="chatbox-room" id="box" style="display: none;" v-cloak>
-    <div class="chatbox-room-head">
-        大中华国际医疗
-        <img @click="show()" src="http://104.149.237.132:2222/assets/img/min.png" alt="">
-    </div>
-    <div class="chatbox-room-box" id="boxcroll">
-
-        <template v-for="log in chatList">
-            <div v-if="log.src_type == 'user'" class="chatbox-room-item-left">
-                <img class="chatbox-room-ava" src="http://104.149.237.132:2222/assets/img/kefu.png" alt="">
-                <div class="chatbox-room-msg">
-                    {{log.content}}
-                </div>
-                <div class="chatbox-room-time">{{timestampToTime(log.create_at)}}</div>
-            </div>
-
-            <div v-if="log.src_type == 'ip'" class="chatbox-room-item-right">
-                <div class="chatbox-room-msg">
-                    {{log.content}}
-                </div>
-                <img class="chatbox-room-ava" src="http://104.149.237.132:2222/assets/img/user.png" alt="">
-                <div class="chatbox-room-time">{{timestampToTime(log.create_at)}}</div>
-            </div>
-        </template>
-
-    </div>
-    <div class="chatbox-room-input">
-        <textarea name="msg" placeholder="请输入消息" v-model="msg"></textarea>
-        <button @click="sendMsg()">发送</button>
-    </div>
-</div>
-</div>`
 
 var chat = new Vue({
     el: "#chatbox",
@@ -183,7 +6,9 @@ var chat = new Vue({
         uuid: "",
         showvalue: 0,
         webSocket: {},
-        chatList: [],
+        chatList: [
+            {"group_id": 0, "ip_id": 0, "src_type": "user", "cmd": "msg", "content": "你好！我們有什麼可以幫到您的？", "create_at": ""}
+        ],
         msg: "",
     },
     methods: {
@@ -200,13 +25,13 @@ var chat = new Vue({
             }
             this.uuid = theRequest['uuid']
             this.id  = theRequest['id']
-            var template = theRequest["template"]
+            // var template = theRequest["template"]
 
-            if (template == "" || template == null || template == undefined) {
-                document.write(template1)
-            } else if (template == 1) {
-                document.write(template1)
-            }
+            // if (template == "" || template == null || template == undefined) {
+            //     document.write(template1)
+            // } else if (template == 1) {
+            //     document.write(template1)
+            // }
         },
         show: function() {
             if (this.showvalue == 0) {
@@ -219,8 +44,17 @@ var chat = new Vue({
                 setTimeout("document.getElementById('notice').style.display = 'block'",450)  
             }
         },
+        show2: function() {
+            if (this.showvalue == 0) {
+                this.showvalue = 1
+                $("#box").fadeIn()
+            } else {
+                this.showvalue = 0
+                $("#box").fadeOut() 
+            }
+        },
         initWebSocket: function() {
-            var url="ws://"+ "104.149.237.132:2222" +"/api/chat?id=" + this.id + "&uuid=" + this.uuid + "&role=ip"
+            var url="wss://"+ "cus.gcbodycheck.com" +"/api/chat?id=" + this.id + "&uuid=" + this.uuid + "&role=ip"
             this.webSocket = new WebSocket(url)
             //消息处理
             this.webSocket.onmessage = function(evt){
@@ -247,6 +81,12 @@ var chat = new Vue({
             // document.getElementById("boxcroll").scrollTop = document.getElementById("boxcroll").scrollHeight
             console.log(document.getElementById("boxcroll").innerHTML)
             $("#boxcroll").scrollTop($("#boxcroll")[0].scrollHeight);
+        },
+        //初始哈websocket,開始聊天
+        beginChat: function() {
+            document.getElementById("beginchat").style.display = 'none'
+            document.getElementById("msginput").style.display = 'block'
+            this.initWebSocket()
         },
         //将时间戳转换成日期时间
         timestampToTime: function(timestamp) {
@@ -280,9 +120,5 @@ var chat = new Vue({
     },
     created() {
         this.getValue()
-        this.initWebSocket()
     },
-    mounted() {
-        // this.scrollBottom()
-    }
 })
