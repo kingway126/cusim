@@ -567,11 +567,11 @@ var template3 = `
         right: 69px !important;
     }
     .chatbox .chatbox-room-msg{
-        max-width: 220px !important;
+        max-width: 188px !important;
     }
     .chatbox {
             bottom: 48px !important;
-            right: 19px !important;
+            right: 5% !important;
     }
 }
     </style>
