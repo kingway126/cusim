@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	"net/http"
-	"CustomIM/services"
-	"CustomIM/utils"
 	"github.com/astaxie/beego/logs"
-	"CustomIM/models"
+	"github.com/recardoz/cusim/models"
+	"github.com/recardoz/cusim/services"
+	"github.com/recardoz/cusim/utils"
+	"net/http"
 )
 
 //todo 登陆api
@@ -41,20 +41,21 @@ func LoginCheck(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//检测UUID
-	uuid, err := services.CheckUUID(arg.User);
+	uuid, err := services.CheckUUID(arg.User)
 	if err != nil {
 		logs.Error(err.Error())
-		utils.RespFail(w,"系统出错，请联系管理员","")
+		utils.RespFail(w, "系统出错，请联系管理员", "")
 	}
 
 	//返回token信息
 	resp := utils.LoginRespArgs{
-		Id: user.Id,
-		Token: 	token,
-		Uuid: 	uuid,
+		Id:    user.Id,
+		Token: token,
+		Uuid:  uuid,
 	}
 	utils.RespOk(w, resp, "", "/index")
 }
+
 //todo 鉴权api
 func CheckToken(w http.ResponseWriter, r *http.Request) {
 
@@ -75,9 +76,10 @@ func CheckToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespOk(w, user.Uuid, "该用户已经登陆","")
+	utils.RespOk(w, user.Uuid, "该用户已经登陆", "")
 
 }
+
 //todo 检测用户token
 func TokenIsRight(id int, token string) bool {
 	user, err := services.GetUserInfoById(id)
@@ -89,6 +91,7 @@ func TokenIsRight(id int, token string) bool {
 	}
 	return true
 }
+
 //todo 获取用户信息
 func UserInfo(w http.ResponseWriter, r *http.Request) {
 	arg := utils.TokenArgs{}
@@ -111,6 +114,7 @@ func UserInfo(w http.ResponseWriter, r *http.Request) {
 	}
 	utils.RespOk(w, user, "", "")
 }
+
 //todo 更新用户邮箱
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	arg := utils.UserInfo{}
@@ -133,6 +137,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	utils.RespOk(w, nil, "更新账户成功", "")
 }
+
 //todo 更新用户密码
 func UpdateUserPwd(w http.ResponseWriter, r *http.Request) {
 	arg := utils.UserPwd{}
@@ -157,6 +162,7 @@ func UpdateUserPwd(w http.ResponseWriter, r *http.Request) {
 
 	utils.RespOk(w, nil, "修改密码成功", "/pwd")
 }
+
 //todo 获取首页用户的信息
 func GetIndexNum(w http.ResponseWriter, r *http.Request) {
 	arg := utils.TokenArgs{}

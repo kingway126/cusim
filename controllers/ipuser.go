@@ -1,12 +1,13 @@
 package controllers
 
 import (
-	"net/http"
-	"CustomIM/utils"
 	"github.com/astaxie/beego/logs"
+	"github.com/recardoz/cusim/services"
+	"github.com/recardoz/cusim/utils"
+	"net/http"
 	"time"
-	"CustomIM/services"
 )
+
 //todo 获取ipuser列表
 func GetIpUserList(w http.ResponseWriter, r *http.Request) {
 	arg := utils.TokenArgs{}
@@ -23,7 +24,7 @@ func GetIpUserList(w http.ResponseWriter, r *http.Request) {
 	}
 	//获取最近3天链接的用户列表
 	end := time.Now().Unix()
-	begin := end - 3600 * 24 * 3
+	begin := end - 3600*24*3
 	ipusers, err := services.ListIpUserForTime(arg.Id, begin, end)
 	if err != nil {
 		logs.Error(err.Error())
@@ -32,6 +33,7 @@ func GetIpUserList(w http.ResponseWriter, r *http.Request) {
 	}
 	utils.RespOkList(w, ipusers, len(ipusers))
 }
+
 //todo 获取单个的ipuser
 func GetIpUser(w http.ResponseWriter, r *http.Request) {
 	arg := utils.ChatListArgs{}
@@ -47,9 +49,9 @@ func GetIpUser(w http.ResponseWriter, r *http.Request) {
 	}
 	//获取ipuser信息
 	ipuser, err := services.GetIpUser(arg.Iid, arg.Id)
-	if err!= nil {
+	if err != nil {
 		logs.Error(err.Error())
-		utils.RespFail(w,"获取记录失败", "")
+		utils.RespFail(w, "获取记录失败", "")
 		return
 	}
 	utils.RespOk(w, ipuser, "", "")

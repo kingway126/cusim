@@ -1,35 +1,39 @@
 package controllers
 
 import (
-	"github.com/gorilla/websocket"
-	"time"
-	"sync"
-	"net/http"
-	"CustomIM/services"
-	"strconv"
-	"github.com/astaxie/beego/logs"
-	"CustomIM/utils"
-	"CustomIM/models"
-	"github.com/go-errors/errors"
-	"io"
 	"encoding/json"
+	"github.com/astaxie/beego/logs"
+	"github.com/go-errors/errors"
+	"github.com/gorilla/websocket"
+	"github.com/recardoz/cusim/models"
+	"github.com/recardoz/cusim/services"
+	"github.com/recardoz/cusim/utils"
+	"io"
+	"net/http"
+	"strconv"
+	"sync"
+	"time"
 )
 
 //每一个用户对应一个连接节点
 type Node struct {
-	Conn 	*websocket.Conn
-	Data 	chan []byte
-	Heart 	*time.Timer
-	Close 	chan bool
-	GroupId 	int
-	SubId 		int
+	Conn    *websocket.Conn
+	Data    chan []byte
+	Heart   *time.Timer
+	Close   chan bool
+	GroupId int
+	SubId   int
 }
+
 //邮件发送冷却时间map
 var MailCool = make(map[int]int64)
+
 //关系映射表
-var GroupClientMap  = make(map[int]map[int]*Node, 0)
+var GroupClientMap = make(map[int]map[int]*Node, 0)
+
 //读写锁
 var rwlocker sync.RWMutex
+
 //todo websocket通讯接口
 func Chat(w http.ResponseWriter, r *http.Request) {
 	//todo 获取请求的参数
@@ -38,11 +42,11 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 	uuid := params.Get("uuid")
 	id, _ := strconv.Atoi(params.Get("id"))
 	var (
-		ip 			string
-		groupid 	int
-		err 		error
-		ipuser		*models.IpUsers
-		app 		*models.Apps
+		ip      string
+		groupid int
+		err     error
+		ipuser  *models.IpUsers
+		app     *models.Apps
 	)
 	//todo 检验接入是否合法
 	if role == "admin" {
@@ -53,7 +57,7 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else if role == "ip" {
-		app,err = services.GetAppByIdAndUuid(id,uuid)
+		app, err = services.GetAppByIdAndUuid(id, uuid)
 		if err != nil {
 			logs.Error(err.Error())
 			return
@@ -62,7 +66,7 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 		//ip  = utils.ParseAddr(r.RemoteAddr)
 		ip = r.Header.Get("X-Real-IP")
 		//判断是否存在Ip用户，没有则创建
-		ipuser, err = services.FindOrCreateIpUser(app.Id,app.Uid, ip)
+		ipuser, err = services.FindOrCreateIpUser(app.Id, app.Uid, ip)
 		if err != nil {
 			logs.Error(err.Error())
 			return
@@ -84,10 +88,10 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	node := &Node{
-		Conn:	conn,
-		Data: 	make(chan []byte, 50),
-		Heart:	time.NewTimer(time.Minute),
-		Close: 	make(chan bool),
+		Conn:  conn,
+		Data:  make(chan []byte, 50),
+		Heart: time.NewTimer(time.Minute),
+		Close: make(chan bool),
 	}
 	//todo 将键名与节点进行绑定
 	if role == "admin" {
@@ -115,6 +119,7 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 	//todo 开启监听NODE协程
 	go ListenNode(node)
 }
+
 //todo 监听websocket消息
 func ListenWebSocket(node *Node) {
 	for {
@@ -122,7 +127,7 @@ func ListenWebSocket(node *Node) {
 		_, msg, err := node.Conn.ReadMessage()
 		if err != nil {
 			//断开连接
-			logs.Error("断开连接",err.Error())
+			logs.Error("断开连接", err.Error())
 			//结束监听Node的协程
 			node.Close <- true
 			//删除关系表的节点
@@ -134,33 +139,35 @@ func ListenWebSocket(node *Node) {
 			return
 		}
 		//处理消息
-		parseMsg(node,[]byte(msg))
+		parseMsg(node, []byte(msg))
 	}
 }
+
 //todo 监听Node的消息
 func ListenNode(node *Node) {
 	for {
 		select {
-			case data := <- node.Data:
-				//发送消息
-				err := node.Conn.WriteMessage(websocket.TextMessage,data)
-				if err != nil {
-					logs.Error(err.Error())
-					return
-				}
-				//发送消息，重置计时器
-				node.Heart.Reset(time.Minute)
-			case <- node.Close:
+		case data := <-node.Data:
+			//发送消息
+			err := node.Conn.WriteMessage(websocket.TextMessage, data)
+			if err != nil {
+				logs.Error(err.Error())
 				return
-			case <- node.Heart.C:
-				//心跳机制
-				node.Conn.WriteMessage(websocket.TextMessage, []byte("heart"))
-				node.Heart.Reset(time.Minute)
+			}
+			//发送消息，重置计时器
+			node.Heart.Reset(time.Minute)
+		case <-node.Close:
+			return
+		case <-node.Heart.C:
+			//心跳机制
+			node.Conn.WriteMessage(websocket.TextMessage, []byte("heart"))
+			node.Heart.Reset(time.Minute)
 
 		}
 
 	}
 }
+
 //todo 分发处理消息
 func parseMsg(sendNode *Node, data []byte) {
 	msg := new(utils.Msg)
@@ -172,105 +179,106 @@ func parseMsg(sendNode *Node, data []byte) {
 	//存储时间戳
 	msg.Date = time.Now().Unix()
 	switch msg.Cmd {
-		//发送数据
-		case utils.CMD_MSG:
-			//判断发送方向
-			var subid int
-			if msg.SrcType == utils.SRCTYPE_IP {
-				subid = 0
-			} else if msg.SrcType == utils.SRCTYPE_USER {
-				subid = msg.IpId
-			} else {
+	//发送数据
+	case utils.CMD_MSG:
+		//判断发送方向
+		var subid int
+		if msg.SrcType == utils.SRCTYPE_IP {
+			subid = 0
+		} else if msg.SrcType == utils.SRCTYPE_USER {
+			subid = msg.IpId
+		} else {
+			return
+		}
+		//查找目标节点
+		rwlocker.RLock()
+		node, ok := GroupClientMap[msg.GroupID][subid]
+		rwlocker.RUnlock()
+
+		if msg.SrcType == utils.SRCTYPE_IP && ok {
+			logs.Informational("類型1")
+			//ip用户发出&&找到目标节点-》消息存储-》消息转发
+			//-》消息存储
+			if err := services.AddChatMsg(sendNode.SubId, msg.GroupID, msg.SrcType, msg.Data, models.READ_NO, time.Now().Unix()); err != nil {
+				logs.Error(err.Error())
+			}
+			//存儲自身的iid
+			msg.Iid = sendNode.SubId
+			//-》消息转发
+			resp, err := json.Marshal(msg)
+			if err != nil {
+				logs.Error(err.Error())
 				return
 			}
-			//查找目标节点
-			rwlocker.RLock()
-			node, ok := GroupClientMap[msg.GroupID][subid]
-			rwlocker.RUnlock()
+			node.Data <- resp
+		} else if msg.SrcType == utils.SRCTYPE_IP && !ok {
+			logs.Informational("類型2")
 
-			if msg.SrcType == utils.SRCTYPE_IP && ok {
-				logs.Informational("類型1")
-				//ip用户发出&&找到目标节点-》消息存储-》消息转发
-				//-》消息存储
-				if err := services.AddChatMsg(sendNode.SubId, msg.GroupID, msg.SrcType, msg.Data, models.READ_NO, time.Now().Unix()); err != nil {
-					logs.Error(err.Error())
-				}
-				//存儲自身的iid
-				msg.Iid = sendNode.SubId
-				//-》消息转发
-				resp, err := json.Marshal(msg)
-				if err != nil {
-					logs.Error(err.Error())
-					return
-				}
-				node.Data <- resp
-			} else if msg.SrcType == utils.SRCTYPE_IP && !ok {
-				logs.Informational("類型2")
-
-				//ip用户发出&&未找到节点-》消息存储-》通知邮件-》返回状态
-				//-》消息存储
-				if err := services.AddChatMsg(sendNode.SubId, msg.GroupID, msg.SrcType, msg.Data, models.READ_NO, time.Now().Unix()); err != nil {
-					logs.Error(err.Error())
-				}
-				//-》通知邮件,获取需要接收的邮件
-				CoolSendMail(sendNode.GroupId)
-				//-》返回状态
-				restruct := utils.Msg{
-					GroupID: msg.GroupID,
-					IpId: sendNode.SubId,
-					SrcType: utils.SRCTYPE_ORDER,
-					Cmd: utils.CMD_NOTICE,
-					Data: "",
-				}
-				resp, err := json.Marshal(restruct)
-				if err != nil {
-					logs.Error(err.Error())
-					return
-				}
-				sendNode.Data <- resp
-
-			} else if msg.SrcType == utils.SRCTYPE_USER && ok{
-				logs.Informational("類型3")
-				//后台用户发出&&找到目标节点-》消息存储-》消息转发
-				//-》消息存储
-				if err := services.AddChatMsg(msg.IpId, msg.GroupID, msg.SrcType, msg.Data, models.READ_NO, time.Now().Unix()); err != nil {
-					logs.Error(err.Error())
-				}
-				//-》消息转发
-				resp, err := json.Marshal(msg)
-				if err != nil {
-					logs.Error(err.Error())
-					return
-				}
-				node.Data <- resp
-			} else if msg.SrcType == utils.SRCTYPE_USER && !ok {
-				logs.Informational("類型4")
-				//后台用户发出&&未找到节点-》返回状态
-				//-》返回状态
-				restruct := utils.Msg{
-					GroupID: msg.GroupID,
-					IpId: msg.IpId,
-					SrcType: utils.SRCTYPE_ORDER,
-					Cmd: utils.CMD_NOTICE,
-					Data: "",
-				}
-				resp, err := json.Marshal(restruct)
-				if err != nil {
-					logs.Error(err.Error())
-					return
-				}
-				sendNode.Data <- resp
+			//ip用户发出&&未找到节点-》消息存储-》通知邮件-》返回状态
+			//-》消息存储
+			if err := services.AddChatMsg(sendNode.SubId, msg.GroupID, msg.SrcType, msg.Data, models.READ_NO, time.Now().Unix()); err != nil {
+				logs.Error(err.Error())
 			}
+			//-》通知邮件,获取需要接收的邮件
+			CoolSendMail(sendNode.GroupId)
+			//-》返回状态
+			restruct := utils.Msg{
+				GroupID: msg.GroupID,
+				IpId:    sendNode.SubId,
+				SrcType: utils.SRCTYPE_ORDER,
+				Cmd:     utils.CMD_NOTICE,
+				Data:    "",
+			}
+			resp, err := json.Marshal(restruct)
+			if err != nil {
+				logs.Error(err.Error())
+				return
+			}
+			sendNode.Data <- resp
 
-			return
-		//提交表单
-		case utils.CMD_FORM:
-			return
-		case utils.CMD_NOTICE:
-			return
+		} else if msg.SrcType == utils.SRCTYPE_USER && ok {
+			logs.Informational("類型3")
+			//后台用户发出&&找到目标节点-》消息存储-》消息转发
+			//-》消息存储
+			if err := services.AddChatMsg(msg.IpId, msg.GroupID, msg.SrcType, msg.Data, models.READ_NO, time.Now().Unix()); err != nil {
+				logs.Error(err.Error())
+			}
+			//-》消息转发
+			resp, err := json.Marshal(msg)
+			if err != nil {
+				logs.Error(err.Error())
+				return
+			}
+			node.Data <- resp
+		} else if msg.SrcType == utils.SRCTYPE_USER && !ok {
+			logs.Informational("類型4")
+			//后台用户发出&&未找到节点-》返回状态
+			//-》返回状态
+			restruct := utils.Msg{
+				GroupID: msg.GroupID,
+				IpId:    msg.IpId,
+				SrcType: utils.SRCTYPE_ORDER,
+				Cmd:     utils.CMD_NOTICE,
+				Data:    "",
+			}
+			resp, err := json.Marshal(restruct)
+			if err != nil {
+				logs.Error(err.Error())
+				return
+			}
+			sendNode.Data <- resp
+		}
+
+		return
+	//提交表单
+	case utils.CMD_FORM:
+		return
+	case utils.CMD_NOTICE:
+		return
 	}
 
 }
+
 //todo 删除关系映射表的节点信息
 func deleteNode(groupid, subid int) error {
 	rwlocker.Lock()
@@ -283,29 +291,31 @@ func deleteNode(groupid, subid int) error {
 
 	return nil
 }
+
 //todo 获取当前ip
 func Ip(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, r.Header.Get("X-Real-IP"))
 	io.WriteString(w, "<br>")
 	io.WriteString(w, r.RemoteAddr)
 }
+
 //todo 模拟发送消息
 func Send(w http.ResponseWriter, r *http.Request) {
 	rwlocker.RLock()
 	node, ok := GroupClientMap[1][1]
 	if !ok {
 		logs.Error("没有找到目标节点")
-		io.WriteString(w,"没有找到目标节点")
+		io.WriteString(w, "没有找到目标节点")
 		return
 	}
 	rwlocker.RUnlock()
 	msg := utils.Msg{
 		GroupID: 1,
-		IpId: 1,
+		IpId:    1,
 		SrcType: "user",
-		Cmd: "msg",
-		Data: "模拟消息",
-		Date: time.Now().Unix(),
+		Cmd:     "msg",
+		Data:    "模拟消息",
+		Date:    time.Now().Unix(),
 	}
 	send, err := json.Marshal(msg)
 	if err != nil {
@@ -315,8 +325,9 @@ func Send(w http.ResponseWriter, r *http.Request) {
 	}
 	node.Conn.WriteMessage(websocket.TextMessage, send)
 }
+
 //todo 加载聊天记录
-func LoadChatList (w http.ResponseWriter, r *http.Request) {
+func LoadChatList(w http.ResponseWriter, r *http.Request) {
 	arg := utils.ChatListArgs{}
 	if err := utils.Bind(r, &arg); err != nil {
 		logs.Error(err.Error())
@@ -337,6 +348,7 @@ func LoadChatList (w http.ResponseWriter, r *http.Request) {
 	}
 	utils.RespOkList(w, chats, len(chats))
 }
+
 //todo 将单个ipuser的所有聊天记录设置成已读
 func SetChatRead(w http.ResponseWriter, r *http.Request) {
 	arg := utils.ChatListArgs{}
@@ -360,15 +372,17 @@ func SetChatRead(w http.ResponseWriter, r *http.Request) {
 	utils.RespOk(w, nil, "", "")
 
 }
+
 //todo 打印关系映射表的信息
 func DumpMap(w http.ResponseWriter, r *http.Request) {
 	for k, v := range GroupClientMap {
-		io.WriteString(w,"groupid:" +  strconv.Itoa(k))
+		io.WriteString(w, "groupid:"+strconv.Itoa(k))
 		for i, _ := range v {
-			io.WriteString(w, "--subid:" + strconv.Itoa(i))
+			io.WriteString(w, "--subid:"+strconv.Itoa(i))
 		}
 	}
 }
+
 //todo 发送邮件并设置冷却信息
 func CoolSendMail(uid int) {
 	//先获取冷却信息
@@ -383,7 +397,7 @@ func CoolSendMail(uid int) {
 	if err != nil {
 		logs.Error(err.Error())
 	} else if len(user.Email) != 0 {
-		utils.SendMsg("CustomIM-通知：有客户发来消息！","CustomIM-通知：有客户发来消息！",user.Email)
+		utils.SendMsg("CustomIM-通知：有客户发来消息！", "CustomIM-通知：有客户发来消息！", user.Email)
 	}
 
 	rwlocker.Lock()
@@ -391,11 +405,12 @@ func CoolSendMail(uid int) {
 	rwlocker.Unlock()
 
 }
+
 //todo 将所有的消息设置成已读
 func SetUserChatRead(w http.ResponseWriter, r *http.Request) {
 	arg := new(utils.ChatListArgs)
 	if err := utils.Bind(r, arg); err != nil {
-		utils.RespFail(w, "请求参数错误","")
+		utils.RespFail(w, "请求参数错误", "")
 		return
 	}
 
@@ -412,11 +427,12 @@ func SetUserChatRead(w http.ResponseWriter, r *http.Request) {
 	}
 	utils.RespOk(w, nil, "", "")
 }
+
 //todo 获取未读消息的数量
 func GetNoReadNum(w http.ResponseWriter, r *http.Request) {
 	arg := new(utils.TokenArgs)
 	if err := utils.Bind(r, arg); err != nil {
-		utils.RespFail(w, "请求参数错误","")
+		utils.RespFail(w, "请求参数错误", "")
 		return
 	}
 

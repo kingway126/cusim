@@ -1,7 +1,7 @@
 package services
 
 import (
-	"CustomIM/models"
+	"github.com/recardoz/cusim/models"
 )
 
 func Config() (*models.Emails, error) {
@@ -11,5 +11,3 @@ func Config() (*models.Emails, error) {
 	}
 	return email, nil
 }
-
-

@@ -1,20 +1,20 @@
 package services
 
 import (
-	"CustomIM/models"
 	"github.com/astaxie/beego/logs"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	"github.com/recardoz/cusim/models"
 )
 
 //todo 數據庫配置信息
 const (
-	DB_HOST    = "127.0.0.1"
-	DB_PORT    = "3306"
-	DB_USER    = "root"
+	DB_HOST = "127.0.0.1"
+	DB_PORT = "3306"
+	DB_USER = "root"
 	//DB_PASS    = "Recardo-0126"
 	//DB_PASS	= "root"
-	DB_PASS	   = "Gcbody-0865"
+	DB_PASS    = "Gcbody-0865"
 	DB_NAME    = "cim"
 	DB_CHARSET = "utf8"
 	DB_DEBUG   = true
@@ -36,7 +36,6 @@ func init() {
 	db.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;").AutoMigrate(&models.Emails{})
 	db.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;").AutoMigrate(&models.IpUsers{})
 	db.Set("gorm:table_options", "ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;").AutoMigrate(&models.Apps{})
-
 
 	logs.Informational("连接数据库成功")
 }

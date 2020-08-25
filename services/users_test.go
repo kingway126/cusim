@@ -1,8 +1,8 @@
 package services
 
 import (
-	"CustomIM/utils"
 	"fmt"
+	"github.com/recardoz/cusim/utils"
 	"testing"
 )
 

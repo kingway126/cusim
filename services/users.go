@@ -1,10 +1,10 @@
 package services
 
 import (
-	"CustomIM/models"
-	"CustomIM/utils"
 	"database/sql"
 	"github.com/pkg/errors"
+	"github.com/recardoz/cusim/models"
+	"github.com/recardoz/cusim/utils"
 	"time"
 )
 
@@ -64,16 +64,15 @@ func CheckUUID(user string) (string, error) {
 		uuid := utils.NewUuid()
 		createat := time.Now().Unix()
 		if err := db.Model(&users).Updates(models.Users{Uuid: uuid, CreateAt: createat}).Error; err != nil {
-			return "",err
+			return "", err
 		}
 	}
-
 
 	return users.Uuid, nil
 }
 
 //todo 通过uuid获取id
-func CheckChat(id int, token, uuid string) (int,error) {
+func CheckChat(id int, token, uuid string) (int, error) {
 	user := new(models.Users)
 	if err := db.Where("id = ? AND hash = ? AND uuid = ?", id, token, uuid).First(user).Error; err != nil {
 		return 0, err
