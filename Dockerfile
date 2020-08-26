@@ -10,6 +10,10 @@ WORKDIR /www/cusim
 #将服务器的go工程代码加入到docker容器中
 ADD . /www/cusim
 
+# ENV 设置环境变量
+ENV GOPROXY="https://goproxy.cn"
+ENV GO111MODULE=on
+
 #go构建可执行文件
 RUN go build .
 
