@@ -12,7 +12,7 @@ import (
 
 //todo 數據庫配置信息
 const (
-	DB_HOST    = "127.0.0.1"
+	DB_HOST    = "172.16.0.14"
 	DB_PORT    = "3306"
 	DB_USER    = "root"
 	DB_PASS    = "recardo0126"
