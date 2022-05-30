@@ -32,6 +32,8 @@ func main() {
 
 	//todo 启动邮件服务
 	utils.MailInit()
+	
+	fmt.Println("test")
 
 	//todo api注册
 	http.HandleFunc("/api/login", controllers.LoginCheck)  //登陆路由
